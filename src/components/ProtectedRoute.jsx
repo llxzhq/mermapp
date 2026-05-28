@@ -1,14 +1,62 @@
-// src/components/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
-import { isTokenValid } from "../utils/auth";
 
+import { useAuth } from "../context/AuthContext";
 
+export default function ProtectedRoute({
+  children,
+  allowedRoles = [],
+}) {
 
-export default function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth();
 
-  if (!isTokenValid()) {
-    // Redirige al login si no hay token
-    return <Navigate to="/login" replace />;
+  // =========================================
+  // LOADING
+  // =========================================
+  if (loading) {
+    return null;
   }
+
+  // =========================================
+  // SIN LOGIN
+  // =========================================
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  // =========================================
+  // ROL USUARIO
+  // =========================================
+  const rol = Number(
+    localStorage.getItem("rol")
+  );
+
+  // =========================================
+  // VALIDAR ROL
+  // =========================================
+  if (
+    allowedRoles.length > 0 &&
+    !allowedRoles.includes(rol)
+  ) {
+
+    // =========================================
+    // REDIRECCIÓN SEGÚN ROL
+    // =========================================
+    if (rol === 2) {
+      return (
+        <Navigate
+          to="/home-gestion"
+          replace
+        />
+      );
+    }
+
+    return (
+      <Navigate
+        to="/select-branch"
+        replace
+      />
+    );
+  }
+
   return children;
 }

@@ -1,18 +1,12 @@
-// src/services/api.js
-
 import axios from "axios";
-import { TOKEN_KEY } from "../utils/constants";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  headers: {
-    "ngrok-skip-browser-warning": "true",
-  },
+  baseURL: "http://192.168.212.8:8080",
 });
 
-// 👉 INTERCEPTOR DE REQUEST: agrega token si existe
+// 🔥 AGREGAR TOKEN AUTOMÁTICAMENTE
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem(TOKEN_KEY);
+  const token = localStorage.getItem("token");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -21,20 +15,100 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// 👉 INTERCEPTOR DE RESPONSE: detecta token expirado o inválido
+// 🔥 MANEJO GLOBAL DE ERRORES
 api.interceptors.response.use(
-  (response) => response, // si todo OK
+  (response) => response,
   (error) => {
-    // Si el backend devuelve 401 → Token expirado o inválido
     if (error.response?.status === 401) {
-      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
 
-      // Redirige inmediatamente al login
-      window.location.href = "/login";
-
-      return;
+      window.location.href = "/login"; // 🔥 fuerza logout
     }
 
     return Promise.reject(error);
   }
 );
+
+// const API_URL =
+//   "http://192.168.212.8:8080";
+
+// /**
+//  * 🔥 Fetch base
+//  */
+// export async function apiFetch(
+//   endpoint,
+//   options = {}
+// ) {
+
+//   const token =
+//     localStorage.getItem("token");
+
+//   const response = await fetch(
+//     `${API_URL}${endpoint}`,
+//     {
+//       ...options,
+
+//       headers: {
+//         "Content-Type": "application/json",
+
+//         Authorization:
+//           token
+//             ? `Bearer ${token}`
+//             : "",
+
+//         ...options.headers,
+//       },
+//     }
+//   );
+
+//   // 🔥 SESIÓN EXPIRADA
+//   if (response.status === 401) {
+
+//     localStorage.clear();
+
+//     window.location.href = "/";
+
+//     throw new Error("Sesión expirada");
+//   }
+
+//   return response;
+// }
+
+// /**
+//  * 🔥 API estilo Axios
+//  */
+// export const api = {
+
+//   async get(endpoint) {
+
+//     return apiFetch(endpoint, {
+//       method: "GET",
+//     });
+//   },
+
+//   async post(endpoint, data = {}) {
+
+//     return apiFetch(endpoint, {
+//       method: "POST",
+
+//       body: JSON.stringify(data),
+//     });
+//   },
+
+//   async put(endpoint, data = {}) {
+
+//     return apiFetch(endpoint, {
+//       method: "PUT",
+
+//       body: JSON.stringify(data),
+//     });
+//   },
+
+//   async delete(endpoint) {
+
+//     return apiFetch(endpoint, {
+//       method: "DELETE",
+//     });
+//   },
+// };

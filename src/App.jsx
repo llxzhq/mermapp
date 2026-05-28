@@ -1,60 +1,204 @@
-// src/App.jsx
+import "./App.css";
 
-import './App.css';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import Splash from "./pages/Splash";
 import Dashboard from "./layouts/Dashboard";
+import DitziaLayout from "./layouts/DitziaLayout";
+
 import Home from "./pages/Home";
-import Register  from './pages/Register';
-import Login from './pages/Login';
-import ProtectedRoute from './components/ProtectedRoute';
-import Products from './pages/products/Products';
-import CreateProduct from './pages/products/CreateProduct';
-import EditProduct from './pages/products/EditProduct';
-import SelectBranch from './pages/SelectBranch'
-import Mermas from "./pages/Mermas";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+
+import { AuthProvider } from "./context/AuthContext";
+
+import Products from "./pages/products/Products";
+import CreateProduct from "./pages/products/CreateProduct";
+import EditProduct from "./pages/products/EditProduct";
+
+import Profile from "./pages/Profile";
+import SelectBranch from "./pages/SelectBranch";
 import CreateMerma from "./pages/products/CreateMerma";
 import Checkout from "./pages/Checkout";
-import CargaMerma from "./pages/CargaMerma";
-import SeleccionSucursal from "./pages/SeleccionSucursal";
 import Historial from "./pages/Historial";
 import MermaDetalle from "./pages/MermaDetalle";
+import Report from "./pages/Report";
+import Mermo from "./pages/Mermo";
 
-
+import HomeGestion from "./pages/Ditzia/homeGestion";
+import GestorMermas from "./pages/Ditzia/GestorMermas";
+import GestorDetails from "./pages/Ditzia/GestorDetails";
+import GestorReports from "./pages/Ditzia/GestorReports";
 
 export default function App() {
 
   return (
-    <>
+
+    <AuthProvider>
+
       <Routes>
 
-        <Route path="/login" element={<Login />} />
+        {/* =========================================
+        🔓 RUTAS PÚBLICAS
+        ========================================= */}
 
-        {/* <Route path="/register" element={<Register/>}/>
-        <Route path="/login" element={<Login />} />
-        <Route path="/select-branch" element={<SelectBranch />} />
-        <Route path="/mermas" element={<Mermas />} />
-        <Route path="/mermas/create" element={<CreateMerma />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/mermas/carga" element={<CargaMerma />} />
-        <Route path="/seleccion-sucursal" element={<SeleccionSucursal />} />
-        <Route path="/historial" element={<Historial />} />
-        <Route path="/mermas/detalle" element={<MermaDetalle />} /> */}
+        <Route
+          path="/"
+          element={<Navigate to="/login" replace />}
+        />
 
-        <Route element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }>
-          <Route index element={<Home />} />
+        <Route
+          path="/splash"
+          element={<Splash />}
+        />
 
-          <Route path='/products' element={<Products />} />
-          <Route path='/products/create' element={<CreateProduct />} />
-          <Route path='/products/edit/:id' element={<EditProduct />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-          
+        {/* =========================================
+        🔒 MERMO DITZIA SIN NAVBAR
+        ========================================= */}
+
+        <Route
+          path="/gestion-mermo"
+          element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <Mermo />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* =========================================
+        🔒 RUTAS DITZIA
+        ========================================= */}
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <DitziaLayout />
+            </ProtectedRoute>
+          }
+        >
+
+          <Route
+            path="/home-gestion"
+            element={<HomeGestion />}
+          />
+
+          <Route
+            path="/gestion-mermas"
+            element={<GestorMermas />}
+          />
+
+          <Route
+            path="/gestion-reportes"
+            element={<GestorReports />}
+          />
+
+          <Route
+            path="/gestion-detalles/:id"
+            element={<GestorDetails />}
+          />
+
         </Route>
 
+        {/* =========================================
+        🔒 RUTAS SUPERVISORES
+        ========================================= */}
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        >
+
+          <Route
+            path="/select-branch"
+            element={<SelectBranch />}
+          />
+
+          <Route
+            path="/home"
+            element={<Home />}
+          />
+
+          <Route
+            path="/profile"
+            element={<Profile />}
+          />
+
+          <Route
+            path="/products"
+            element={<Products />}
+          />
+
+          <Route
+            path="/products/create"
+            element={<CreateProduct />}
+          />
+
+          <Route
+            path="/products/edit"
+            element={<EditProduct />}
+          />
+
+          <Route
+            path="/mermas/create"
+            element={<CreateMerma />}
+          />
+
+          <Route
+            path="/checkout"
+            element={<Checkout />}
+          />
+
+          <Route
+            path="/historial"
+            element={<Historial />}
+          />
+
+          <Route
+            path="/mermas/detalle/:id"
+            element={<MermaDetalle />}
+          />
+
+          <Route
+            path="/report"
+            element={<Report />}
+          />
+
+          <Route
+            path="/mermo"
+            element={<Mermo />}
+          />
+
+          <Route
+            path="/reset-password"
+            element={<ResetPassword />}
+          />
+
+        </Route>
+
+        {/* =========================================
+        🚫 DEFAULT
+        ========================================= */}
+
+        <Route
+          path="*"
+          element={<Navigate to="/login" replace />}
+        />
+
       </Routes>
-    </>
+
+    </AuthProvider>
+
   );
+
 }

@@ -1,218 +1,197 @@
-// // src/pages/Register.jsx
-
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import LogoCafeDuranGris from "../assets/images/Logo_gris.png";
-// import LogoMermas from "../assets/images/logotipo_mermas.png";
-// import axios from "axios";
-
-// export default function Register() {
-//   const [form, setForm] = useState({
-//     email: "",
-//     password: "",
-//   });
-
-//   const [loading, setLoading] = useState(false);
-//   const [errorMsg, setErrorMsg] = useState("");
-
-//   const navigate = useNavigate();
-
-//   // Maneja cambios en inputs
-//   const handleChange = (e) => {
-//     setForm({
-//       ...form,
-//       [e.target.name]: e.target.value,
-//     });
-//   };
-
-//   // Enviar formulario
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setErrorMsg("");
-
-//     if (!form.email || !form.password) {
-//       setErrorMsg("Debe ingresar correo y contraseña");
-//       return;
-//     }
-
-//     try {
-//       setLoading(true);
-
-//       // LLAMADA REAL AL BACKEND
-//       const response = await axios.post(
-//         "http://localhost:3000/api/register",
-//         form,
-//       );
-
-//       // Guardar token
-//       localStorage.setItem("TOKEN", response.data.token);
-
-//       navigate("/");
-//     } catch (error) {
-//       setErrorMsg("Correo o contraseña incorrectos");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//   <div className="min-h-screen flex flex-col justify-between bg-white">
-
-//     {/* CONTENIDO PRINCIPAL */}
-//     <div className="w-full max-w-sm mx-auto flex flex-col items-center">
-
-//       <img 
-//         src={LogoMermas} 
-//         alt="Mermas" 
-//         className="w-56 mt-50"
-//       />
-
-//       <h3 className=" font-semibold tracking-tight leading-tight text-black mt-15 text-xl">
-//         Crea tu cuenta 
-//       </h3>
-
-//       <p className="text-center text-sm text-black leading-snug mb-8 mt-1">
-//         Introduce tu e-mail y una contraseña <br /> 
-//         para registrarte en la app
-//       </p>
-
-//       <form onSubmit={handleSubmit} className="w-full space-y-4">
-
-//         <div>
-//           <label className="text-sm text-gray-700">E-mail</label>
-//           <input
-//             type="email"
-//             name="email"
-//             value={form.email}
-//             onChange={handleChange}
-//             className="mt-1 w-full px-4 py-2 border border-gray-400 rounded-lg"
-//             placeholder="email@epa.com.pa"
-//           />
-//         </div>
-
-//         <div>
-//           <label className="text-sm text-gray-700">Contraseña</label>
-//           <input
-//             type="password"
-//             name="password"
-//             value={form.password}
-//             onChange={handleChange}
-//             className="mt-1 w-full px-4 py-2 border border-gray-400 rounded-lg placeholder-gray-400"
-//             placeholder="********" 
-//           />
-//         </div>
-
-//         <button
-//           type="submit"
-//           disabled={loading}
-//           className="w-full bg-black text-white py-3 rounded-lg mt-4"
-//         >
-//           {loading ? "Ingresando..." : "Continuar"}
-//         </button>
-
-//       </form>
-//     </div>
-
-//     {/* LINEA SEPARADORA */}
-//     <div className="w-full h-px bg-gray-100 mt-35"></div>
-
-//     {/* FOOTER */}
-//     <div className="flex justify-center">
-//       <img 
-//         src={LogoCafeDuranGris} 
-//         alt="Cafe Duran" 
-//         className="w-22 h-auto oapacity-80 mb-5 mt-5"
-//       />
-//     </div>
-
-//   </div>
-// );
-// }
-
-// src/pages/Register.jsx
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import LogoCafeDuranGris from "../assets/images/Logo_gris.png";
+import LogoMermas from "../assets/images/logotipo_mermas.png";
+import { motion, AnimatePresence } from "framer-motion";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Register() {
-  const [form, setForm] = useState({ email: "", password: "" });
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg("");
 
     if (!form.email || !form.password) {
-      setErrorMsg("Debe ingresar correo y contraseña");
+      setErrorMsg("Completa todos los campos");
       return;
     }
 
     try {
       setLoading(true);
+      setErrorMsg("");
 
       await axios.post(
         "http://localhost:3000/api/register",
         form
       );
 
-      navigate("/login");
+      // pequeño delay UX
+      setTimeout(() => {
+        navigate("/login");
+      }, 800);
 
     } catch (error) {
       setErrorMsg(
         error.response?.data?.message || "Error del servidor"
       );
-    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-md w-96"
-      >
-        <h2 className="text-xl mb-4">Crear Cuenta</h2>
+    <div className="min-h-screen bg-[#f6f7fb] flex flex-col justify-between">
 
-        <input
-          type="email"
-          name="email"
-          placeholder="usuario@duran.com.pa"
-          value={form.email}
-          onChange={handleChange}
-          className="w-full mb-4 p-2 border rounded"
-        />
+      {/* CONTENIDO */}
+      <div className="flex-1 flex flex-col justify-center px-6">
 
-        <input
-          type="password"
-          name="password"
-          placeholder="********"
-          value={form.password}
-          onChange={handleChange}
-          className="w-full mb-4 p-2 border rounded"
-        />
+        {/* LOGO */}
+        <div className="flex justify-center mb-6">
+          <img src={LogoMermas} className="w-44" />
+        </div>
 
-        <button
-          type="submit"
-          className="w-full bg-black text-white py-2 rounded"
-        >
-          {loading ? "Creando..." : "Registrarse"}
-        </button>
+        {/* CARD */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 max-w-sm mx-auto w-full">
 
-        {errorMsg && (
-          <p className="text-red-500 text-sm mt-2">
-            {errorMsg}
+          <h2 className="text-xl font-bold text-gray-900 mb-1">
+            Crear cuenta 
+          </h2>
+
+          <p className="text-sm text-gray-400 mb-6">
+            Regístrate para comenzar a usar la app
           </p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* EMAIL */}
+            <div>
+              <label className="text-xs text-gray-500">
+                Correo electrónico
+              </label>
+
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="email@epa.com.pa"
+                className="mt-1 w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300"
+              />
+            </div>
+
+            {/* PASSWORD */}
+            <div>
+              <label className="text-xs text-gray-500">
+                Contraseña
+              </label>
+
+              <div className="relative mt-1">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="********"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl pr-10 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-gray-400"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {/* ERROR */}
+            {errorMsg && (
+              <p className="text-xs text-red-500">
+                {errorMsg}
+              </p>
+            )}
+
+            {/* BOTÓN */}
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              type="submit"
+              disabled={loading}
+              className={`w-full py-3 rounded-xl font-semibold transition
+                ${loading
+                  ? "bg-gray-300 text-gray-500"
+                  : "bg-gray-800 text-white"
+                }
+              `}
+            >
+              {loading ? "Creando cuenta..." : "Registrarme"}
+            </motion.button>
+
+          </form>
+
+          {/* LINK LOGIN */}
+          <p className="text-xs text-gray-400 text-center mt-5">
+            ¿Ya tienes cuenta?{" "}
+            <span
+              onClick={() => navigate("/login")}
+              className="text-gray-700 font-semibold cursor-pointer"
+            >
+              Inicia sesión
+            </span>
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* FOOTER */}
+      <div className="pb-6 flex justify-center">
+        <img
+          src={LogoCafeDuranGris}
+          className="w-20 opacity-70"
+        />
+      </div>
+
+      {/* 🔥 OVERLAY LOADING */}
+      <AnimatePresence>
+        {loading && (
+          <motion.div
+            className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-2xl p-6 text-center shadow-lg"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+            >
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-800 border-t-transparent mx-auto mb-3" />
+              <p className="text-sm font-semibold">
+                Creando cuenta...
+              </p>
+            </motion.div>
+          </motion.div>
         )}
-      </form>
+      </AnimatePresence>
+
     </div>
   );
 }

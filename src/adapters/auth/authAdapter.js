@@ -1,21 +1,13 @@
-// src/adapters/auth/authAdapter.js
-
-import { api } from "../../services/api";
+import { api } from "../../services/api"
 
 export const pingAdapter = async () => {
   try {
 
-    const { data } = await api.post("/auth/ping");
+    const { data } = await api.get("/auth/ping");
 
-    return {
-      ok: true,
-      token: token: data.data[0].token, 
-    };
+    return data;
   } catch (err) {
-    return {
-      ok: false,
-      message: err.response?.data?.message || "Error en el servidor",
-    };
+    return err
   }
 };
 
@@ -24,14 +16,8 @@ export const loginAdapter = async ({ Usuario, Password }) => {
 
     const { data } = await api.post("/auth/login", { Usuario, Password });
 
-    return {
-      ok: true,
-      token: data.data.token, 
-    };
+    return data;
   } catch (err) {
-    return {
-      ok: false,
-      message: err.response?.data?.message || "Error en el servidor",
-    };
+    return err;
   }
 };

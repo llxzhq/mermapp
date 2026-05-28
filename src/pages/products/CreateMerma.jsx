@@ -1,194 +1,206 @@
-
-import { CircleChevronLeft, Info, TriangleAlert } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, AlertTriangle, CheckCircle } from "lucide-react";
+import { createMermaAdapter } from "../../adapters/mermas.adapter";
 
-import ModalAlert from "../../components/modals/ModalAlert";
-import ModalSpinner from "../../components/modals/ModelSpinner";
-import Select from "../../components/form/Select";
-import Input from "../../components/form/Input";
-
-import { newMerma } from "../../adapters/mermas.adapter";
+import LogoMermas from "../../assets/images/logotipo_mermas.png";
 
 export default function CreateMerma() {
+  const navigate = useNavigate();
 
-  // Estados de los campos del formulario
-  const [store, setStore] = useState("");
-  const [product, setProduct] = useState("");
-  const [reason, setReason] = useState("");
-  const [quantity, setQuantity] = useState("");
+  const [form, setForm] = useState({
+    store: "",
+    product: "",
+    reason: "",
+    quantity: "",
+  });
 
-  // Modal de alerta
-  const [showAlert, setShowAlert] = useState(false);
-  const [showAlertSubmit, setShowAlertSubmit] = useState(false);
-  const [titleAlert, setTitleAlert] = useState("Atención");
-  const [messageAlert1, setMessageAlert1] = useState("");
-  const [messageAlert2, setMessageAlert2] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState(null);
 
-  const [iconComponentModalAlert, setIconComponentModalAlert] = useState(
-    <TriangleAlert className="text-red-600" size={24} />
-  );
-
-  // Opciones temporales mientras tu compañero conecta la API
   const stores = [
     { value: "1", text: "Tienda Centro" },
     { value: "2", text: "Tienda Norte" },
-    { value: "3", text: "Tienda Sur" },
   ];
 
   const products = [
     { value: "101", text: "Café Latte" },
     { value: "102", text: "Capuccino" },
-    { value: "103", text: "Americano" },
   ];
 
   const reasons = [
     { value: "1", text: "Producto vencido" },
-    { value: "2", text: "Producto dañado" },
-    { value: "3", text: "Derrame" },
-    { value: "4", text: "Error de inventario" },
+    { value: "2", text: "Derrame" },
   ];
 
-  const handleAdd = async (e) => {
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setShowAlertSubmit(true);
+    // 🔥 VALIDACIÓN
+    if (!form.store || !form.product || !form.reason || !form.quantity) {
+      setAlert({
+        type: "error",
+        message: "Completa todos los campos",
+      });
+      return;
+    }
 
     try {
-      const formData = new FormData();
+      setLoading(true);
 
-      formData.append("idTienda", store);
-      formData.append("codigoProducto", product);
-      formData.append("idMotivo", reason);
-      formData.append("cantidad", quantity);
+      const res = await createMermaAdapter(form);
 
-      const response = await newMerma(formData);
-
-      if (!response.ok) {
-        setShowAlertSubmit(false);
-        setShowAlert(true);
-        setTitleAlert("Error al registrar la merma");
-        setMessageAlert1(response.message ?? "Error inesperado");
+      if (!res.ok) {
+        setAlert({
+          type: "error",
+          message: res.message || "Error al registrar",
+        });
         return;
       }
 
-      setShowAlertSubmit(false);
-      setShowAlert(true);
-      setTitleAlert("Merma registrada");
-      setIconComponentModalAlert(
-        <Info className="text-green-600" size={24} />
-      );
-      setMessageAlert1("La merma fue registrada correctamente");
+      setAlert({
+        type: "success",
+        message: "Merma registrada correctamente",
+      });
 
-      // Limpiar formulario
-      setStore("");
-      setProduct("");
-      setReason("");
-      setQuantity("");
+      // limpiar
+      setForm({
+        store: "",
+        product: "",
+        reason: "",
+        quantity: "",
+      });
 
-    } catch (error) {
-      setShowAlertSubmit(false);
-      setShowAlert(true);
-      setTitleAlert("Error al registrar la merma");
-      setMessageAlert1(error.message ?? "Error inesperado");
-      setMessageAlert2("");
+      // 🚀 regresar y refrescar Home
+      setTimeout(() => {
+        navigate("/home");
+      }, 1000);
+
+    } catch (err) {
+      setAlert({
+        type: "error",
+        message: "Error inesperado",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="sm:max-w-3xl mx-auto">
+    <div className="min-h-screen bg-[#f4f6fb] flex justify-center">
 
-      <Link
-        to="/mermas"
-        className="inline-flex items-center gap-2 bg-[#47351A] hover:bg-[#604927] text-white px-4 py-2 rounded mb-4"
-      >
-        <CircleChevronLeft size={16} />
-        <span>Regresar</span>
-      </Link>
+      <div className="w-full max-w-md md:max-w-2xl px-4 py-6">
 
-      <div className="relative w-full sm:max-w-3xl mx-auto bg-white shadow-md rounded-lg p-4 sm:p-6">
-        <h2 className="text-gray-900 text-2xl font-bold mb-4">
-          Registrar Merma
-        </h2>
+        {/* HEADER */}
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 bg-white rounded-xl shadow"
+          >
+            <ArrowLeft size={18} />
+          </button>
 
-        <form onSubmit={handleAdd} className="flex flex-wrap -mx-2 items-end">
+          <img src={LogoMermas} className="w-28" />
+        </div>
 
-          <div className="px-2 w-full sm:w-full mb-2 mt-2">
+        {/* CARD */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm">
 
-            <Select
-              widthPercent="50"
-              textLabel="Tienda"
-              isRequired={true}
-              value={store}
-              onChange={setStore}
+          <h2 className="text-lg font-bold mb-4">
+            Registrar Merma
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            <select
               name="store"
-              textFirstOption="Seleccione la tienda"
-              options={stores}
-            />
-
-            <Select
-              widthPercent="50"
-              textLabel="Producto"
-              isRequired={true}
-              value={product}
-              onChange={setProduct}
-              name="product"
-              textFirstOption="Seleccione el producto"
-              options={products}
-            />
-
-            <Select
-              widthPercent="50"
-              textLabel="Motivo de Merma"
-              isRequired={true}
-              value={reason}
-              onChange={setReason}
-              name="reason"
-              textFirstOption="Seleccione el motivo"
-              options={reasons}
-            />
-
-            <Input
-              widthPercent="50"
-              textLabel="Cantidad"
-              isRequired={true}
-              type="number"
-              placeholder="Cantidad"
-              value={quantity}
-              onChange={setQuantity}
-              name="quantity"
-            />
-
-            <button
-              type="submit"
-              className="bg-green-600 text-white px-3 py-2 h-10 rounded-md w-full hover:bg-green-700 mt-4"
+              value={form.store}
+              onChange={handleChange}
+              className="w-full p-3 bg-gray-100 rounded-xl"
             >
-              Guardar Merma
-            </button>
-          </div>
-        </form>
+              <option value="">Seleccione tienda</option>
+              {stores.map(s => (
+                <option key={s.value} value={s.value}>{s.text}</option>
+              ))}
+            </select>
+
+            <select
+              name="product"
+              value={form.product}
+              onChange={handleChange}
+              className="w-full p-3 bg-gray-100 rounded-xl"
+            >
+              <option value="">Seleccione producto</option>
+              {products.map(p => (
+                <option key={p.value} value={p.value}>{p.text}</option>
+              ))}
+            </select>
+
+            <select
+              name="reason"
+              value={form.reason}
+              onChange={handleChange}
+              className="w-full p-3 bg-gray-100 rounded-xl"
+            >
+              <option value="">Motivo</option>
+              {reasons.map(r => (
+                <option key={r.value} value={r.value}>{r.text}</option>
+              ))}
+            </select>
+
+            <input
+              type="number"
+              name="quantity"
+              value={form.quantity}
+              onChange={handleChange}
+              placeholder="Cantidad"
+              className="w-full p-3 bg-gray-100 rounded-xl"
+            />
+
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              type="submit"
+              disabled={loading}
+              className={`w-full py-3 rounded-xl font-semibold
+                ${loading ? "bg-gray-300" : "bg-black text-white"}
+              `}
+            >
+              {loading ? "Guardando..." : "Guardar merma"}
+            </motion.button>
+
+          </form>
+
+        </div>
+
+        {/* ALERT */}
+        <AnimatePresence>
+          {alert && (
+            <motion.div
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-3"
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+            >
+              {alert.type === "error" ? (
+                <AlertTriangle className="text-red-500" />
+              ) : (
+                <CheckCircle className="text-green-500" />
+              )}
+
+              <p className="text-sm">{alert.message}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </div>
-
-      {showAlert && (
-        <ModalAlert
-          titleAlert={titleAlert}
-          messageAlert1={messageAlert1}
-          messageAlert2={messageAlert2}
-          textButton="Cerrar"
-          iconComponent={iconComponentModalAlert}
-          onClick={() => setShowAlert(false)}
-        />
-      )}
-
-      {showAlertSubmit && (
-        <ModalSpinner
-          titleModal="Procesando..."
-          messageModal=""
-          iconComponent={<Info className="text-blue-600" size={24} />}
-        />
-      )}
     </div>
   );
 }
-
-

@@ -1,7 +1,7 @@
 /* eslint-env node */
 
 import express from 'express';
-import db from '../db.js';
+import { getConnection } from '../db.js';
 
 const router = express.Router();
 
@@ -10,11 +10,14 @@ router.get('/', async (req, res) => {
   try {
     console.log('Entró a /api/products');
 
-    const result = await db.request().query(
+    const pool = await getConnection();
+
+    const result = await pool.request().query(
       'SELECT TOP 10 * FROM dbo.MermasPruebasLH'
     );
 
     res.json(result.recordset);
+
   } catch (error) {
     console.error(error);
 

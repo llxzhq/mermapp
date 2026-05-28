@@ -1,39 +1,85 @@
-// src/components/Navbar.jsx
+import { Home, History, Plus, User } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 
-import { Box, Coffee, House } from "lucide-react";
-import { Link } from "react-router-dom";
+export default function Navbar() {
 
-export default function Navbar({ onLinkClick }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const tabs = [
+    { icon: Home, path: "/home" },
+    { icon: History, path: "/historial" },
+    { icon: Plus, path: "/checkout" },
+    { icon: User, path: "/profile" }
+  ];
 
   return (
-    <div className="space-y-2">
+    <div className="fixed bottom-6 left-0 right-0 flex justify-center z-50">
 
-      <Link
-        to="/"
-        className="flex items-center gap-2 text-sm hover:text-gray-300"
-        onClick={onLinkClick}
-      >
-        <House size={24} />
-        <span>Dashboard</span>
-      </Link>
+      <div className="
+        relative
+        flex items-center justify-between
+        w-[92%] max-w-md
+        px-6 py-3
+        rounded-2xl
 
-      <Link
-        to="/products"
-        className="flex items-center gap-2 text-sm hover:text-gray-300"
-        onClick={onLinkClick}
-      >
-        <Box size={24} />
-        <span>Products</span>
-      </Link>
+        backdrop-blur-xl
+        bg-white/70
+        border border-white/40
 
-      <Link
-        to="/"
-        className="flex items-center gap-2 text-sm hover:text-gray-300"
-        onClick={onLinkClick}
-      >
-        <Coffee size={24} />
-        <span>Merma</span>
-      </Link>
+        shadow-[0_20px_50px_rgba(0,0,0,0.15)]
+      ">
+
+        {tabs.map((tab, i) => {
+          const Icon = tab.icon;
+          const isActive = location.pathname === tab.path;
+
+          return (
+            <motion.button
+              key={i}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => navigate(tab.path)}
+              className="relative flex-1 flex justify-center items-center"
+            >
+
+              {/* 🔥 INDICADOR MÁS SUAVE */}
+              {isActive && (
+                <motion.div
+                  layoutId="active-pill"
+                  className="
+                    absolute
+                    w-11 h-11
+                    bg-white/60
+                    backdrop-blur-md
+                    border border-white/50
+                    rounded-xl
+                    shadow-sm
+                  "
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 25
+                  }}
+                />
+              )}
+
+              {/* ICONO */}
+              <Icon
+                size={22}
+                className={`
+                  z-10 transition-all duration-300
+                  ${isActive
+                    ? "text-black scale-110"
+                    : "text-gray-500"}
+                `}
+              />
+
+            </motion.button>
+          );
+        })}
+
+      </div>
 
     </div>
   );

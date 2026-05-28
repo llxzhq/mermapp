@@ -1,37 +1,33 @@
 /* eslint-env node */
 /* global process */
 
-import sql from 'mssql/msnodesqlv8.js';
+import sql from 'mssql';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const config = {
-  server: process.env.DB_SERVER,
-  database: process.env.DB_DATABASE,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  driver: 'msnodesqlv8',
+  server: process.env.DB_SERVER, // ej: "10.10.10.5" o "SRVSQL01"
+  database: process.env.DB_DATABASE,
   options: {
+    encrypt: false, // importante en redes internas
     trustServerCertificate: true
   }
 };
 
-let pool = null;
+let pool;
 
-try {
-  pool = await sql.connect(config);
-  console.log('✅ Conectado a SQL Server');
-} catch (err) {
-  console.error('❌ Error de conexión SQL:');
-  console.error(err);
-}
-
-export default {
-  request() {
+export const getConnection = async () => {
+  try {
     if (!pool) {
-      throw new Error('No existe conexión a SQL Server');
+      pool = await sql.connect(config);
+      console.log('✅ Conectado a SQL Server');
     }
-    return pool.request();
+    return pool;
+  } catch (error) {
+    console.error('❌ Error conectando a SQL Server:', error.message);
+    throw error;
   }
 };

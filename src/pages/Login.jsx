@@ -1,365 +1,436 @@
-// src/pages/Login.jsx
+import { useEffect, useState } from "react";
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import LogoCafeDuranGris from "../assets/images/Logo_gris.png";
 import LogoMermas from "../assets/images/logotipo_mermas.png";
-import axios from "axios";
-import userLogued from "../data/data"
-import { loginAdapter, pingAdapter } from "../adapters/auth/authAdapter.js";
 
-export default  function Login() {
-  const [form, setForm] = useState({
-    Usuario: "",
-    Password: "",
-  });
+import { motion, AnimatePresence } from "framer-motion";
+import { AlertTriangle } from "lucide-react";
 
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+import { useMsal } from "@azure/msal-react";
+import { loginRequest } from "../adapters/auth/authConfig.js";
+
+import { useNavigate } from "react-router-dom";
+
+import { useAuth } from "../context/AuthContext";
+
+export default function Login() {
+
+  const { instance, accounts } = useMsal();
+
+  const { setUser } = useAuth();
 
   const navigate = useNavigate();
 
-  // Maneja cambios en inputs
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [shake, setShake] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+
+  // =========================================
+  // ERROR UI
+  // =========================================
+  const triggerError = (msg) => {
+
+    setErrorMsg(msg);
+
+    setShake(true);
+
+    setTimeout(() => setShake(false), 400);
   };
 
-  // Enviar formulario
-  
+  // =========================================
+  // LOGIN MICROSOFT (REDIRECT CALLBACK)
+  // =========================================
+  useEffect(() => {
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    //setErrorMsg("");
+    const processLogin = async () => {
 
-    if (!form.Usuario || !form.Password) {
-      debugger;
-      // alert("Debe ingresar correo y contraseña");
-      //setErrorMsg("Debe ingresar correo y contraseña");
-      return;
-    }
+      try {
+
+        setLoading(true);
+
+        const response =
+          await instance.handleRedirectPromise();
+
+        if (!response) {
+
+          setLoading(false);
+
+          return;
+        }
+
+        console.log(
+          "🔵 RESPUESTA MICROSOFT:",
+          response
+        );
+
+        // =========================================
+        // ID TOKEN
+        // =========================================
+        const idToken = response.idToken;
+
+        console.log("🟡 ID TOKEN:", idToken);
+
+        if (!idToken) {
+          throw new Error(
+            "No se recibió idToken de Microsoft"
+          );
+        }
+
+        // =========================================
+        // ACCESS TOKEN
+        // =========================================
+        let accessToken = null;
+
+        try {
+
+          const account =
+            response.account || accounts[0];
+
+          if (account) {
+
+            const tokenResponse =
+              await instance.acquireTokenSilent({
+                account,
+                scopes: ["User.Read"],
+              });
+
+            accessToken =
+              tokenResponse.accessToken;
+
+            console.log(
+              "🟢 ACCESS TOKEN:",
+              accessToken
+            );
+          }
+
+        } catch (err) {
+
+          console.warn(
+            "⚠️ No se pudo obtener access token:",
+            err
+          );
+        }
+
+        // =========================================
+        // LOGIN BACKEND
+        // =========================================
+        const backendResponse = await fetch(
+          "http://192.168.212.8:8080/auth/login-azure",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              Token: idToken,
+            }),
+          }
+        );
+
+        console.log(
+          "STATUS BACKEND:",
+          backendResponse.status
+        );
+
+        if (!backendResponse.ok) {
+
+          throw new Error(
+            `Backend respondió ${backendResponse.status}`
+          );
+        }
+
+        const result =
+          await backendResponse.json();
+
+        console.log(
+          "RESPUESTA BACKEND:",
+          result
+        );
+
+        if (
+          result.status !== "OK" ||
+          !result.data?.length
+        ) {
+
+          throw new Error(
+            result.message ||
+            "Respuesta inválida del servidor"
+          );
+        }
+
+        const user = result.data[0];
+
+        console.log(
+          "USUARIO LOGIN:",
+          user
+        );
+
+        if (!user.token) {
+
+          throw new Error(
+            "El backend no devolvió JWT"
+          );
+        }
+
+        // =========================================
+        // LIMPIAR STORAGE
+        // =========================================
+        localStorage.clear();
+
+        // =========================================
+        // GUARDAR SESIÓN
+        // =========================================
+        localStorage.setItem(
+          "token",
+          user.token
+        );
+
+        localStorage.setItem(
+          "usuario",
+          user.usuario || ""
+        );
+
+        localStorage.setItem(
+          "nombre",
+          user.nombre || ""
+        );
+
+        localStorage.setItem(
+          "rol",
+          String(user.rol || "")
+        );
+
+        localStorage.setItem(
+          "ruta",
+          String(user.ruta || "")
+        );
+
+        localStorage.setItem(
+          "idUsuario",
+          String(user.id || "")
+        );
+
+        // =========================================
+        // ACTUALIZAR CONTEXTO
+        // =========================================
+        setUser({
+          token: user.token,
+          usuario: user.usuario,
+          nombre: user.nombre,
+          rol: user.rol,
+          ruta: user.ruta,
+        });
+
+        console.log("LOGIN EXITOSO");
+
+        // =========================================
+        // REDIRECCIÓN
+        // =========================================
+        if (Number(user.rol) === 2) {
+
+          navigate("/home-gestion");
+
+        } else {
+
+          navigate("/select-branch");
+        }
+
+      } catch (err) {
+
+        console.error(
+          "MICROSOFT LOGIN ERROR:",
+          err
+        );
+
+        triggerError(
+          err.message ||
+          "No pudimos iniciar sesión"
+        );
+
+        setLoading(false);
+
+        setShowLoader(false);
+      }
+    };
+
+    processLogin();
+
+  }, [
+    instance,
+    accounts,
+    navigate,
+    setUser,
+  ]);
+
+  // =========================================
+  // LOGIN BUTTON
+  // =========================================
+  const handleMicrosoftLogin = async () => {
 
     try {
+
+      setErrorMsg("");
+
       setLoading(true);
 
-      //const resPing = await pingAdapter();
+      setTimeout(() => {
 
-      // alert(resPing);
+        setShowLoader(true);
 
-      const res = await loginAdapter(form);
+      }, 400);
 
-      // LLAMADA REAL AL BACKEND
-      // const response = await axios.post(
-      //   "http://localhost:3000/api/login",
-      //   form,
-      // );
+      await instance.loginRedirect({
+        ...loginRequest,
+        prompt: "select_account",
+      });
 
-      if(!res.ok){
-        // alert(res.message);
-        return res.message;
-      }
+    } catch (err) {
 
-      localStorage.setItem("token", JSON.stringify(res));      
+      console.error(
+        "LOGIN REDIRECT ERROR:",
+        err
+      );
 
-      console.log(res);
+      triggerError(
+        "No pudimos iniciar sesión con Microsoft"
+      );
 
-      navigate("/");
-    } catch (error) {
-      setErrorMsg("Correo o contraseña incorrectos");
-    } finally {
       setLoading(false);
+
+      setShowLoader(false);
     }
   };
 
   return (
-  <div className="min-h-screen flex flex-col justify-between bg-white">
 
-    {/* CONTENIDO PRINCIPAL */}
-    <div className="w-full max-w-sm mx-auto flex flex-col items-center">
+    <div className="min-h-screen bg-[#f6f7fb] flex flex-col justify-between">
 
-      <img 
-        src={LogoMermas} 
-        alt="Mermas" 
-        className="w-56 mt-50"
-      />
+      <div className="flex-1 flex flex-col justify-center px-6">
 
-      <h3 className=" font-semibold tracking-tight leading-tight text-black mt-15 text-xl">
-        Inicio de sesión 
-      </h3>
+        <div className="flex justify-center mb-8">
 
-      <p className="text-center text-sm text-black leading-snug mb-8 mt-1">
-        Ingresa tu e-mail y contraseña <br /> 
-        para entrar en la app
-      </p>
-
-      <form onSubmit={handleSubmit} className="w-full space-y-4">
-
-        <div>
-          <label className="text-sm text-gray-700">Usuario</label>
-          <input
-            type="text"
-            name="Usuario"
-            value={form.Usuario}
-            onChange={handleChange}
-            className="mt-1 w-full px-4 py-2 border border-gray-400 rounded-lg"
-            placeholder="ovelez"
+          <img
+            src={LogoMermas}
+            className="w-48"
           />
+
         </div>
 
-        <div>
-          <label className="text-sm text-gray-700">Contraseña</label>
-          <input
-            type="password"
-            name="Password"
-            value={form.Password}
-            onChange={handleChange}
-            className="mt-1 w-full px-4 py-2 border border-gray-400 rounded-lg placeholder-gray-400"
-            placeholder="********" 
-          />
-        </div>
-
-        <button
-          type="submit"
-          // disabled={loading}
-          className="w-full bg-black text-white py-3 rounded-lg mt-4"
+        <motion.div
+          animate={
+            shake
+              ? { x: [-6, 6, -4, 4, 0] }
+              : {}
+          }
+          className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 max-w-sm mx-auto w-full"
         >
-          {loading ? "Ingresando..." : "Continuar"}
-        </button>
 
-      </form>
+          <h2 className="text-xl font-bold mb-1 text-center">
+            Bienvenido
+          </h2>
+
+          <p className="text-sm text-gray-400 mb-6 text-center">
+            Accede con tu cuenta corporativa
+          </p>
+
+          <AnimatePresence>
+
+            {errorMsg && (
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: -10,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  y: -10,
+                }}
+                className="mb-4 bg-red-50 border border-red-200 rounded-2xl p-4 flex gap-3"
+              >
+
+                <AlertTriangle
+                  className="text-red-500 mt-1"
+                  size={18}
+                />
+
+                <p className="text-xs text-red-600 font-medium">
+                  {errorMsg}
+                </p>
+
+              </motion.div>
+            )}
+
+          </AnimatePresence>
+
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={handleMicrosoftLogin}
+            disabled={loading}
+            className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all
+              ${loading
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+              }`}
+          >
+
+            {loading
+              ? "Conectando..."
+              : "Iniciar con Microsoft"}
+
+          </motion.button>
+
+        </motion.div>
+
+      </div>
+
+      <div className="pb-6 flex justify-center">
+
+        <img
+          src={LogoCafeDuranGris}
+          className="w-20 opacity-70"
+        />
+
+      </div>
+
+      <AnimatePresence>
+
+        {showLoader && (
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+          >
+
+            <div className="bg-white px-8 py-6 rounded-2xl shadow-xl flex flex-col items-center">
+
+              <div className="w-12 h-12 border-4 border-gray-200 rounded-full relative">
+
+                <div className="absolute inset-0 border-4 border-black border-t-transparent rounded-full animate-spin" />
+
+              </div>
+
+              <p className="text-sm font-semibold mt-4">
+                Conectando con Microsoft...
+              </p>
+
+            </div>
+
+          </motion.div>
+        )}
+
+      </AnimatePresence>
+
     </div>
-
-    {/* LINEA SEPARADORA */}
-    <div className="w-full h-px bg-gray-100 mt-35"></div>
-
-    {/* FOOTER */}
-    <div className="flex justify-center">
-      <img 
-        src={LogoCafeDuranGris} 
-        alt="Cafe Duran" 
-        className="w-22 h-auto oapacity-80 mb-5 mt-5"
-      />
-    </div>
-
-  </div>
-);
+  );
 }
-
-//src/pages/Login.jsx
-
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import axios from "axios";
-// import LogoCafeDuranGris from "../assets/images/Logo_gris.png";
-// import LogoMermas from "../assets/images/logotipo_mermas.png";
-
-// export default function Login() {
-//   const [form, setForm] = useState({ email: "", password: "" });
-//   const [loading, setLoading] = useState(false);
-//   const [errorMsg, setErrorMsg] = useState("");
-
-//   const navigate = useNavigate();
-
-//   const handleChange = (e) => {
-//     setForm({ ...form, [e.target.name]: e.target.value });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setErrorMsg("");
-
-//     if (!form.email || !form.password) {
-//       setErrorMsg("Debe ingresar correo y contraseña");
-//       return;
-//     }
-
-//     // Validación correo corporativo
-//     if (!form.email.endsWith("@epa.com.pa")) {
-//       setErrorMsg("Debe usar correo corporativo");
-//       return;
-//     }
-
-//     try {
-//       setLoading(true);
-
-//       const response = await axios.post(
-//         "http://localhost:3000/api/login",
-//         form
-//       );
-
-//       localStorage.setItem("TOKEN", response.data.token);
-
-//       navigate("/dashboard");
-
-//     } catch (error) {
-//       setErrorMsg(
-//         error.response?.data?.message || "Error del servidor"
-//       );
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen flex flex-col justify-between bg-white">
-//       <div className="w-full max-w-sm mx-auto flex flex-col items-center">
-//         <img src={LogoMermas} alt="Mermas" className="w-56 mt-20" />
-
-//         <h3 className="font-semibold text-black mt-10 text-xl">
-//           Inicio de sesión
-//         </h3>
-
-//         <form onSubmit={handleSubmit} className="w-full space-y-4 mt-6">
-//           <div>
-//             <label className="text-sm text-gray-700">E-mail</label>
-//             <input
-//               type="email"
-//               name="email"
-//               value={form.email}
-//               onChange={handleChange}
-//               className="mt-1 w-full px-4 py-2 border border-gray-400 rounded-lg"
-//               placeholder="email@epa.com.pa"
-//             />
-//           </div>
-
-//           <div>
-//             <label className="text-sm text-gray-700">Contraseña</label>
-//             <input
-//               type="password"
-//               name="password"
-//               value={form.password}
-//               onChange={handleChange}
-//               className="mt-1 w-full px-4 py-2 border border-gray-400 rounded-lg"
-//               placeholder="********"
-//             />
-//           </div>
-
-//           <button
-//             type="submit"
-//             disabled={loading}
-//             className="w-full bg-black text-white py-3 rounded-lg"
-//           >
-//             {loading ? "Ingresando..." : "Continuar"}
-//           </button>
-
-//           {errorMsg && (
-//             <p className="text-red-500 text-sm text-center">
-//               {errorMsg}
-//             </p>
-//           )}
-//         </form>
-//       </div>
-
-//       <div className="w-full h-px bg-gray-100 mt-10"></div>
-
-//       <div className="flex justify-center">
-//         <img
-//           src={LogoCafeDuranGris}
-//           alt="Cafe Duran"
-//           className="w-20 opacity-80 mb-5 mt-5"
-//         />
-//       </div>
-//     </div>
-//   );
-// }
-
-// src/pages/Login.jsx
-
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import axios from "axios";
-// import { AudioLines } from "lucide-react";
-
-// export default function Login() {
-//   const [form, setForm] = useState({ email: "", password: "" });
-//   const [loading, setLoading] = useState(false);
-//   const [errorMsg, setErrorMsg] = useState("");
-
-//   const navigate = useNavigate();
-
-//   const handleChange = (e) => {
-//     setForm({ ...form, [e.target.name]: e.target.value.trim() });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setErrorMsg("");
-
-//     if (!form.email || !form.password) {
-//       return setErrorMsg("Todos los campos son obligatorios");
-//     }
-
-//     if (!form.email.endsWith("@epa.com.pa")) {
-//       return setErrorMsg("Debe usar correo corporativo");
-//     }
-
-//     try {
-//       setLoading(true);
-
-//       const response = await axios.post(
-//         "http://localhost:3000/api/login",
-//         form,
-//         { withCredentials: true }
-//       );
-
-//       localStorage.setItem("TOKEN", response.data.token);
-
-//       navigate("/dashboard");
-
-//     } catch (error) {
-//       setErrorMsg(
-//         error.response?.data?.message || "Error del servidor"
-//       );
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-//       <form
-//         onSubmit={handleSubmit}
-//         className="bg-white p-8 rounded-xl shadow-lg w-96"
-//       >
-//         <h2 className="text-xl font-semibold mb-6 text-center">
-//           Inicio de sesión
-//         </h2>
-
-//         <input
-//           type="email"
-//           name="email"
-//           placeholder="email@epa.com.pa"
-//           value={form.email}
-//           onChange={handleChange}
-//           className="w-full mb-4 p-3 border rounded-lg"
-//         />
-
-//         <input
-//           type="password"
-//           name="password"
-//           placeholder="********"
-//           value={form.password}
-//           onChange={handleChange}
-//           className="w-full mb-4 p-3 border rounded-lg"
-//         />
-
-//         <button
-//           type="submit"
-//           disabled={loading}
-//           className="w-full bg-black text-white py-3 rounded-lg"
-//         >
-//           {loading ? "Ingresando..." : "Continuar"}
-//         </button>
-
-//         {errorMsg && (
-//           <p className="text-red-500 text-sm mt-4 text-center">
-//             {errorMsg}
-//           </p>
-//         )}
-//       </form>
-//     </div>
-//   ); 
-// }
-
