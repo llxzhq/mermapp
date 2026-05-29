@@ -128,25 +128,6 @@ export default function App() {
             element={<Profile />}
           />
 
-          <Route
-            path="/products"
-            element={<Products />}
-          />
-
-          <Route
-            path="/products/create"
-            element={<CreateProduct />}
-          />
-
-          <Route
-            path="/products/edit"
-            element={<EditProduct />}
-          />
-
-          <Route
-            path="/mermas/create"
-            element={<CreateMerma />}
-          />
 
           <Route
             path="/checkout"
