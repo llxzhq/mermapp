@@ -49,23 +49,10 @@ export default function Mermo() {
   // LOAD USER
   // =========================================
   useEffect(() => {
-    const user = localStorage.getItem("usuario");
+    const nombre = localStorage.getItem("nombre");
 
-    const usersMap = {
-      ovelez: "Omar Velez",
-      driquelme: "David Riquelme",
-      asanchez: "Alicia Sánchez",
-      osaez: "Orlando Saenz",
-      dbonilla: "Ditzia Bonilla",
-      jortiz: "Julián Ortiz",
-      lhernandez: "Laura Hernández",
-      sinformacion: "Sistemas de Información",
-    };
-
-    if (user) {
-      const clean = user.toLowerCase().trim();
-
-      setUsuarioNombre(usersMap[clean] || user);
+    if (nombre) {
+      setUsuarioNombre(nombre);
     }
   }, []);
 
