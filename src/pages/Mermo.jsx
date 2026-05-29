@@ -57,7 +57,9 @@ export default function Mermo() {
       asanchez: "Alicia Sánchez",
       osaez: "Orlando Saenz",
       dbonilla: "Ditzia Bonilla",
-      jortiz: "Julio Ortiz",
+      jortiz: "Julián Ortiz",
+      lhernandez: "Laura Hernández",
+      sinformacion: "Sistemas de Información",
     };
 
     if (user) {
