@@ -15,17 +15,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import { AuthProvider } from "./context/AuthContext";
 
-import Products from "./pages/products/Products";
-import CreateProduct from "./pages/products/CreateProduct";
-import EditProduct from "./pages/products/EditProduct";
-
 import Profile from "./pages/Profile";
 import SelectBranch from "./pages/SelectBranch";
-import CreateMerma from "./pages/products/CreateMerma";
 import Checkout from "./pages/Checkout";
 import Historial from "./pages/Historial";
 import MermaDetalle from "./pages/MermaDetalle";
-import Report from "./pages/Report";
 import Mermo from "./pages/Mermo";
 
 import HomeGestion from "./pages/Ditzia/homeGestion";
@@ -169,10 +163,7 @@ export default function App() {
             element={<MermaDetalle />}
           />
 
-          <Route
-            path="/report"
-            element={<Report />}
-          />
+        
 
           <Route
             path="/mermo"
