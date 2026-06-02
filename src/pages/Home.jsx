@@ -45,36 +45,37 @@ export default function Home() {
     productoCritico: "-",
   });
 
-  const usersMap = {
-    ovelez: "Omar Velez",
-    driquelme: "David Riquelme",
-    asanchez: "Alicia Sánchez",
-    osaez: "Orlando Saenz",
-    dbonilla: "Ditzia Bonilla",
-  };
+
 
   // =========================================
   // INIT
   // =========================================
-  useEffect(() => {
-    const user = localStorage.getItem("usuario");
+useEffect(() => {
+  const nombre = localStorage.getItem("nombre");
 
-    const branch = JSON.parse(localStorage.getItem("branch"));
+  const branch = JSON.parse(
+    localStorage.getItem("branch") || "null"
+  );
 
-    if (user) {
-      const clean = user.toLowerCase().trim();
+  if (nombre) {
+    const primerNombre = nombre
+      .trim()
+      .split(" ")[0];
 
-      setUsuarioNombre(usersMap[clean] || clean);
-    } else {
-      setUsuarioNombre("Usuario");
-    }
+    setUsuarioNombre(
+      primerNombre.charAt(0).toUpperCase() +
+      primerNombre.slice(1).toLowerCase()
+    );
+  } else {
+    setUsuarioNombre("Usuario");
+  }
 
-    if (branch) {
-      setSucursal(branch);
-    }
+  if (branch) {
+    setSucursal(branch);
+  }
 
-    loadData();
-  }, []);
+  loadData();
+}, []);
 
   // =========================================
   // LOAD DATA
