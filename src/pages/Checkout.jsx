@@ -59,6 +59,8 @@ export default function Checkout() {
 
   const [showSuccessCard, setShowSuccessCard] = useState(false);
 
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   const [savedData, setSavedData] = useState(null);
 
   const [productoExtra, setProductoExtra] = useState({
@@ -81,18 +83,18 @@ export default function Checkout() {
 
   const ruta = branch?.ruta;
 
-    // =========================================
+  const username = localStorage.getItem("usuario") || "";
+
+  // =========================================
   // CONTROL NAVBAR
   // =========================================
   useEffect(() => {
-
     navigate(location.pathname, {
       replace: true,
       state: {
         hideNavbar: tipo !== null,
       },
     });
-
   }, [tipo]);
 
   // =========================================
@@ -330,8 +332,10 @@ export default function Checkout() {
 
       formData.append("DetalleProducto", tipo);
 
-      formData.append("Grabado", "lhernandez.trainee");
-
+      formData.append(
+        "Grabado",
+        username || usuarioNombre || "usuario_desconocido",
+      );
       formData.append("UnidadMedidaICG", "Gr");
 
       formData.append("IdTienda", idTienda);
@@ -360,6 +364,134 @@ export default function Checkout() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const ConfirmModal = () => {
+    if (!showConfirmModal) return null;
+
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
+        >
+          <motion.div
+            initial={{
+              opacity: 0,
+              scale: 0.9,
+              y: 40,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.9,
+            }}
+            transition={{
+              type: "spring",
+              damping: 20,
+            }}
+            className="w-full max-w-lg bg-white rounded-[32px] shadow-2xl overflow-hidden"
+          >
+            <div className="bg-black text-white px-6 py-5">
+              <h2 className="text-xl font-bold">Confirmar registro</h2>
+
+              <p className="text-sm text-gray-300 mt-1">
+                Revisa la información antes de guardar.
+              </p>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Sucursal</span>
+                <span className="font-semibold">{branch?.tienda}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-500">Tipo</span>
+                <span className="font-semibold capitalize">{tipo}</span>
+              </div>
+
+              <div className="flex justify-between gap-3">
+                <span className="text-gray-500">Producto</span>
+
+                <span className="font-semibold text-right">
+                  {tipo === "materia" ? producto?.nombreProd : producto?.nombre}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-500">Motivo</span>
+
+                <span className="font-semibold">{motivo?.text}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-500">Cantidad</span>
+
+                <span className="font-semibold">
+                  {cantidad} {unidad}
+                </span>
+              </div>
+
+              {productoExtra.codigoSAP && (
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Código SAP</span>
+
+                  <span className="font-semibold">
+                    {productoExtra.codigoSAP}
+                  </span>
+                </div>
+              )}
+
+              {productoExtra.precio && (
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Precio</span>
+
+                  <span className="font-semibold">{productoExtra.precio}</span>
+                </div>
+              )}
+
+              {imageFile && (
+                <div>
+                  <p className="text-sm text-gray-500 mb-2">Evidencia</p>
+
+                  <img
+                    src={URL.createObjectURL(imageFile)}
+                    alt="preview"
+                    className="w-full h-48 object-cover rounded-2xl border"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 pt-0 flex gap-3">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="flex-1 py-3 rounded-2xl border border-gray-300 font-medium"
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={async () => {
+                  setShowConfirmModal(false);
+                  await handleSave();
+                }}
+                className="flex-1 py-3 rounded-2xl bg-black text-white font-semibold"
+              >
+                Confirmar y guardar
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
+    );
   };
 
   // =========================================
@@ -408,18 +540,35 @@ export default function Checkout() {
             />
 
             <div className="p-6">
-              <div className="flex justify-center mb-5">
-                <div
-                  className={`w-24 h-24 rounded-[28px] flex items-center justify-center
-                    ${success ? "bg-green-100" : "bg-red-100"}
-                  `}
-                >
-                  {success ? (
-                    <CheckCircle2 size={48} className="text-green-600" />
-                  ) : (
-                    <ServerCrash size={48} className="text-red-600" />
-                  )}
-                </div>
+              <div className="flex justify-center mb-6">
+                {success ? (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 180,
+                      damping: 12,
+                    }}
+                    className="relative"
+                  >
+                    {/* Halo */}
+                    <div className="absolute inset-0 rounded-full bg-green-400/20 animate-ping" />
+
+                    {/* Chulito */}
+                    <div className="w-28 h-28 rounded-full bg-green-500 flex items-center justify-center shadow-[0_10px_40px_rgba(34,197,94,0.45)]">
+                      <CheckCircle2
+                        size={64}
+                        strokeWidth={3}
+                        className="text-white"
+                      />
+                    </div>
+                  </motion.div>
+                ) : (
+                  <div className="w-28 h-28 rounded-full bg-red-500 flex items-center justify-center shadow-[0_10px_40px_rgba(239,68,68,0.45)]">
+                    <ServerCrash size={60} className="text-white" />
+                  </div>
+                )}
               </div>
 
               <div className="text-center">
@@ -457,6 +606,7 @@ export default function Checkout() {
 
   return (
     <>
+      <ConfirmModal />
       <SuccessCard />
 
       <div className="min-h-screen bg-[#f5f6fa] flex justify-center px-4 lg:px-6 overflow-x-hidden">
@@ -838,7 +988,7 @@ export default function Checkout() {
                     {/* BUTTON */}
                     <button
                       disabled={!isValid}
-                      onClick={handleSave}
+                      onClick={() => setShowConfirmModal(true)}
                       className={`w-full py-4 rounded-2xl font-semibold text-sm transition shadow-lg ${
                         isValid
                           ? "bg-black text-white hover:scale-[1.01]"

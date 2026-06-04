@@ -99,7 +99,7 @@ export default function Profile() {
       await instance.logoutRedirect({
 
         postLogoutRedirectUri:
-          import.meta.env.VITE_REDIRECT_URI,
+          "http://localhost:5173/login"
       });
 
     } catch (error) {

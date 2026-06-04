@@ -72,7 +72,7 @@ export default function GestoraHome() {
       sessionStorage.clear();
 
       await instance.logoutRedirect({
-        postLogoutRedirectUri: import.meta.env.VITE_REDIRECT_URI,
+        postLogoutRedirectUri: "http://localhost:5173/login"
       });
 
     } catch (error) {

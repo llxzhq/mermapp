@@ -6,8 +6,7 @@ export const msalConfig = {
     authority:
       "https://login.microsoftonline.com/3aa2e272-823e-4297-b843-ab38c1aca984",
 
-    redirectUri:
-      import.meta.env.VITE_REDIRECT_URI,
+    redirectUri: "http://localhost:5173/login",
   },
 
   cache: {

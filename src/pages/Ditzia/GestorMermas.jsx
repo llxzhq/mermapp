@@ -179,7 +179,7 @@ export default function HistorialGestora() {
     mes: "Todos",
   });
 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const apiUrl = "http://192.168.212.8:8080";
 
   // =========================================
   // FETCH
@@ -240,7 +240,7 @@ export default function HistorialGestora() {
           }),
 
           imagen: item.rutaImagenMerma
-            ? `${apiUrl}/mermas/image?ruta=${item.rutaImagenMerma}`
+            ? `http://192.168.212.8:8080/mermas/image?ruta=${item.rutaImagenMerma}`
             : "https://placehold.co/300x300/png",
         };
       });
@@ -303,7 +303,7 @@ export default function HistorialGestora() {
   // FILTRAR
   // =========================================
   const filteredData = useMemo(() => {
-    return data.filter((item) => {
+    const filtered = data.filter((item) => {
       const matchSearch =
         item.producto.toLowerCase().includes(search.toLowerCase()) ||
         item.tienda.toLowerCase().includes(search.toLowerCase()) ||
@@ -336,6 +336,11 @@ export default function HistorialGestora() {
 
       return matchSearch && matchEstado && matchTienda && matchMes;
     });
+
+    // MÁS RECIENTES ARRIBA
+    return filtered.sort(
+      (a, b) => b.fechaReal.getTime() - a.fechaReal.getTime(),
+    );
   }, [data, search, filters]);
 
   // =========================================

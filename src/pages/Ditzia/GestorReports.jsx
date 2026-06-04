@@ -37,7 +37,7 @@ export default function GestorReports() {
     years: [],
   });
 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const apiUrl = "http://192.168.212.8:8080";
 
   // =========================================
   // FETCH
@@ -48,80 +48,47 @@ export default function GestorReports() {
 
       const res = await api.get("/mermas");
 
-      const mapped = await Promise.all(
-        (res.data?.data || []).map(async (item) => {
-          const fecha = new Date(item.fechaHoraActual);
+      const mapped = (res.data?.data || []).map((item) => {
+        const fecha = new Date(item.fechaHoraActual);
 
-          // =========================================
-          // PRECIO ESTIMADO REAL DESDE MENUS-COFFEE
-          // =========================================
-          let total = 0;
+        return {
+          id: item.id,
 
-          try {
-            const menuRes = await api.get(
-              `/mermas/menus-coffee?idTienda=${item.idTienda}`,
-            );
+          producto: item.producto || "Producto",
 
-            const productos = menuRes.data || [];
+          tienda: item.nombreTienda || "Sin tienda",
 
-            const productoEncontrado = productos.find(
-              (p) =>
-                p.nombre?.toLowerCase().trim() ===
-                item.producto?.toLowerCase().trim(),
-            );
+          motivo: item.selectMotivo || "Sin motivo",
 
-            const precio = Number(productoEncontrado?.precioSugerido || 0);
+          tipo:
+            item.detalleProducto === "materia" ? "Materia prima" : "Preparada",
 
-            total = precio * Number(item.cantidadICG || 0);
-          } catch (error) {
-            console.error("ERROR PRECIO:", error);
-          }
+          cantidad: item.cantidadICG || 0,
 
-          return {
-            id: item.id,
+          estado:
+            item.docSapMerma && item.docSapMerma.trim() !== ""
+              ? "Procesada"
+              : "Pendiente",
 
-            producto: item.producto || "Producto",
+          documentoSAP: item.docSapMerma || "-",
 
-            tienda: item.nombreTienda || "Sin tienda",
+          fecha,
 
-            motivo: item.selectMotivo || "Sin motivo",
+          mes: fecha.getMonth(),
 
-            tipo:
-              item.detalleProducto === "materia"
-                ? "Materia prima"
-                : "Preparada",
+          year: fecha.getFullYear(),
 
-            cantidad: item.cantidadICG || 0,
+          fechaTexto: fecha.toLocaleDateString("es-CO", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }),
 
-            total,
-
-            estado:
-              item.docSapMerma && item.docSapMerma.trim() !== ""
-                ? "Procesada"
-                : "Pendiente",
-
-            documentoSAP: item.docSapMerma || "-",
-
-            fecha,
-
-            mes: fecha.getMonth(),
-
-            year: fecha.getFullYear(),
-
-            fechaTexto: fecha.toLocaleDateString("es-CO", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            }),
-
-            imagen: item.rutaImagenMerma
-              ? `${apiUrl}/mermas/image?ruta=${item.rutaImagenMerma}`
-              : "https://placehold.co/300x300/png",
-          };
-        }),
-      );
-
-      setData(mapped);
+          imagen: item.rutaImagenMerma
+            ? `${apiUrl}/mermas/image?ruta=${item.rutaImagenMerma}`
+            : "https://placehold.co/300x300/png",
+        };
+      });
 
       setData(mapped);
     } catch (error) {
@@ -220,16 +187,12 @@ export default function GestorReports() {
 
     const totalProductos = filteredData.length;
 
-    const perdidaTotal = filteredData.reduce(
-      (acc, item) => acc + Number(item.total || 0),
-      0,
-    );
+    
 
     return {
       pendientes,
       procesadas,
       totalProductos,
-      perdidaTotal,
     };
   }, [filteredData]);
 
@@ -249,7 +212,6 @@ export default function GestorReports() {
       Motivo: item.motivo,
       Tipo: item.tipo,
       Cantidad: item.cantidad,
-      Total: item.total,
       Estado: item.estado,
       DocumentoSAP: item.documentoSAP,
       Fecha: item.fechaTexto,
@@ -530,10 +492,6 @@ export default function GestorReports() {
                   </th>
 
                   <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500">
-                    Total
-                  </th>
-
-                  <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500">
                     Fecha
                   </th>
                 </tr>
@@ -543,14 +501,14 @@ export default function GestorReports() {
                 {loading ? (
                   [...Array(6)].map((_, i) => (
                     <tr key={i} className="border-b border-gray-100">
-                      <td colSpan={7} className="px-6 py-5">
+                      <td colSpan={6} className="px-6 py-5">
                         <div className="h-6 bg-gray-100 rounded-xl animate-pulse" />
                       </td>
                     </tr>
                   ))
                 ) : filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-16 text-gray-400">
+                    <td colSpan={6} className="text-center py-16 text-gray-400">
                       No hay resultados
                     </td>
                   </tr>
@@ -589,10 +547,6 @@ export default function GestorReports() {
 
                       <td className="px-6 py-4 text-sm text-gray-700 font-medium">
                         {item.documentoSAP}
-                      </td>
-
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        ${Number(item.total).toLocaleString("es-CO")}
                       </td>
 
                       <td className="px-6 py-4 text-sm text-gray-500">

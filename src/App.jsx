@@ -20,6 +20,7 @@ import SelectBranch from "./pages/SelectBranch";
 import Checkout from "./pages/Checkout";
 import Historial from "./pages/Historial";
 import MermaDetalle from "./pages/MermaDetalle";
+import Reports from "./pages/Reports";
 import Mermo from "./pages/Mermo";
 
 import HomeGestion from "./pages/Ditzia/homeGestion";
@@ -144,6 +145,10 @@ export default function App() {
             element={<MermaDetalle />}
           />
 
+          <Route
+            path="/reports"
+            element={<Reports />}
+          />
         
 
           <Route

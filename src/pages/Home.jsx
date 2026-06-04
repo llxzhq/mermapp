@@ -6,6 +6,7 @@ import {
   RefreshCw,
   AlertCircle,
   ChevronRight,
+  FileSpreadsheet,
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -45,37 +46,31 @@ export default function Home() {
     productoCritico: "-",
   });
 
-
-
   // =========================================
   // INIT
   // =========================================
-useEffect(() => {
-  const nombre = localStorage.getItem("nombre");
+  useEffect(() => {
+    const nombre = localStorage.getItem("nombre");
 
-  const branch = JSON.parse(
-    localStorage.getItem("branch") || "null"
-  );
+    const branch = JSON.parse(localStorage.getItem("branch") || "null");
 
-  if (nombre) {
-    const primerNombre = nombre
-      .trim()
-      .split(" ")[0];
+    if (nombre) {
+      const primerNombre = nombre.trim().split(" ")[0];
 
-    setUsuarioNombre(
-      primerNombre.charAt(0).toUpperCase() +
-      primerNombre.slice(1).toLowerCase()
-    );
-  } else {
-    setUsuarioNombre("Usuario");
-  }
+      setUsuarioNombre(
+        primerNombre.charAt(0).toUpperCase() +
+          primerNombre.slice(1).toLowerCase(),
+      );
+    } else {
+      setUsuarioNombre("Usuario");
+    }
 
-  if (branch) {
-    setSucursal(branch);
-  }
+    if (branch) {
+      setSucursal(branch);
+    }
 
-  loadData();
-}, []);
+    loadData();
+  }, []);
 
   // =========================================
   // LOAD DATA
@@ -207,23 +202,47 @@ useEffect(() => {
               )}
             </div>
 
-            {/* BUTTON */}
-            <button
-              onClick={handleChangeBranch}
-              className="
-                w-full sm:w-auto
-                flex items-center justify-center gap-2
-                bg-[#2E9437]
-                text-white
-                px-6 py-3
-                rounded-2xl
-                shadow-lg
-                font-medium
-              "
-            >
-              <RefreshCw size={16} />
-              Cambiar sucursal
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* REPORTES */}
+              <button
+                onClick={() => navigate("/reports")}
+                className="
+                  w-full sm:w-auto
+                  flex items-center justify-center gap-2
+                  bg-[#DC2626]
+                  text-white
+                  px-6 py-3
+                  rounded-2xl
+                  shadow-lg
+                  font-medium
+                  hover:opacity-90
+                  transition
+                "
+              >
+                <FileSpreadsheet size={16} />
+                Reportes
+              </button>
+
+              {/* CAMBIAR SUCURSAL */}
+              <button
+                onClick={handleChangeBranch}
+                className="
+                  w-full sm:w-auto
+                  flex items-center justify-center gap-2
+                  bg-[#2E9437]
+                  text-white
+                  px-6 py-3
+                  rounded-2xl
+                  shadow-lg
+                  font-medium
+                  hover:opacity-90
+                  transition
+                "
+              >
+                <RefreshCw size={16} />
+                Cambiar sucursal
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -330,8 +349,6 @@ useEffect(() => {
               </div>
             </div>
 
-            
-
             {/* ========================================= */}
             {/* CHART */}
             {/* ========================================= */}
@@ -416,7 +433,7 @@ useEffect(() => {
                     <img
                       src={
                         item.rutaImagenMerma
-                          ? `${import.meta.env.VITE_API_BASE_URL}/mermas/image?ruta=${item.rutaImagenMerma}`
+                          ? `http://192.168.212.8:8080/mermas/image?ruta=${item.rutaImagenMerma}`
                           : "https://placehold.co/300x300/png"
                       }
                       alt={item.producto}
