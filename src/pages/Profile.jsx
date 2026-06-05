@@ -66,18 +66,18 @@ export default function Profile() {
   // =========================================
   // STATES
   // =========================================
-  const [showPassword, setShowPassword] =
-    useState(false);
+  // const [showPassword, setShowPassword] =
+  //   useState(false);
 
-  const [saving, setSaving] =
-    useState(false);
+  // const [saving, setSaving] =
+  //   useState(false);
 
-  const [passwords, setPasswords] =
-    useState({
-      actual: "",
-      nueva: "",
-      confirm: "",
-    });
+  // const [passwords, setPasswords] =
+  //   useState({
+  //     actual: "",
+  //     nueva: "",
+  //     confirm: "",
+  //   });
 
   // =========================================
   // LOGOUT
@@ -99,7 +99,7 @@ export default function Profile() {
       await instance.logoutRedirect({
 
         postLogoutRedirectUri:
-          "http://localhost:5173/login"
+          `${import.meta.env.VITE_BASE_URL}/login`
       });
 
     } catch (error) {
