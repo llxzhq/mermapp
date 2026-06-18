@@ -39,6 +39,7 @@ export default function GestorReports() {
 
   const apiUrl = "http://192.168.212.8:8080";
 
+  
   // =========================================
   // FETCH
   // =========================================
@@ -47,6 +48,8 @@ export default function GestorReports() {
       setLoading(true);
 
       const res = await api.get("/mermas");
+
+      console.log("REPORTES:", res.data?.data?.[0]);
 
       const mapped = (res.data?.data || []).map((item) => {
         const fecha = new Date(item.fechaHoraActual);

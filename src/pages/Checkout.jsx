@@ -31,6 +31,12 @@ export default function Checkout() {
 
   const [menus, setMenus] = useState([]);
 
+  const [idMenu, setIdMenu] = useState([]);
+
+  const [codigoProducto, setCodigoProducto] = useState([]);
+
+  const [codigoIntegracionProducto, setCodigoIntegracionProducto] = useState([]);
+
   const [rawMaterials, setRawMaterials] = useState([]);
 
   const [producto, setProducto] = useState(null);
@@ -65,6 +71,7 @@ export default function Checkout() {
 
   const [productoExtra, setProductoExtra] = useState({
     codigoSAP: "",
+    codigoINVU: "",
     precio: "",
   });
 
@@ -196,6 +203,8 @@ export default function Checkout() {
   // SELECT PRODUCTO
   // =========================================
   const handleSelectProducto = async (prod) => {
+    console.log("PRODUCTO:", prod);
+
     setProducto(prod);
 
     setMotivo(null);
@@ -204,7 +213,8 @@ export default function Checkout() {
 
     if (tipo === "materia") {
       setProductoExtra({
-        codigoSAP: prod.codigoProd || "",
+        codigoSAP: prod.codigoSAP || "",
+        codigoINVU: prod.codigoProd || prod.codigo || "",
         precio: prod.costo || "",
       });
 
@@ -221,7 +231,8 @@ export default function Checkout() {
     }
 
     setProductoExtra({
-      codigoSAP: prod.codigoSAP || prod.codigo || "",
+      codigoSAP: prod.codigoIntegracion || "",
+      codigoINVU: prod.codigo || "",
       precio: prod.precio ?? prod.precioSugerido ?? "",
     });
 
@@ -445,6 +456,16 @@ export default function Checkout() {
 
                   <span className="font-semibold">
                     {productoExtra.codigoSAP}
+                  </span>
+                </div>
+              )}
+
+              {productoExtra.codigoINVU && (
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Código INVU</span>
+
+                  <span className="font-semibold">
+                    {productoExtra.codigoINVU}
                   </span>
                 </div>
               )}
@@ -796,6 +817,16 @@ export default function Checkout() {
 
                             <span className="font-semibold text-sm">
                               {productoExtra.codigoSAP || "N/A"}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-400">
+                              Código INVU
+                            </span>
+
+                            <span className="font-semibold text-sm">
+                              {productoExtra.codigoINVU || "N/A"}
                             </span>
                           </div>
 
