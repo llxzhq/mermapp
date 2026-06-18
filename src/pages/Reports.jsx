@@ -193,10 +193,16 @@ export default function Reports() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6fa] px-5 pt-8 pb-20">
+    <div className="min-h-screen bg-[#f5f6fa] px-4 sm:px-5 lg:px-8 pt-8 pb-28 overflow-x-hidden">
       <Toaster position="top-center" />
 
-      <div className="max-w-7xl mx-auto">
+      <div
+        className="w-full mx-auto"
+        style={{
+          background: "red",
+          minHeight: "100vh",
+        }}
+      >
         {/* HEADER */}
         <div className="sticky top-0 z-30 backdrop-blur-xl bg-white/80 border border-white/40 px-5 pt-8 pb-5 rounded-[32px]">
           <motion.img
@@ -321,7 +327,7 @@ export default function Reports() {
         </div>
 
         {/* KPIS */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mt-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
           <div className="bg-white rounded-[24px] sm:rounded-[30px] p-4 sm:p-5 border border-gray-100">
             <BarChart3 className="text-red-500" />
 
@@ -356,39 +362,57 @@ export default function Reports() {
         </div>
 
         {/* TABLA */}
-        <div className="mt-6 bg-white rounded-[32px] border border-gray-100 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px]">
+        <div className="mt-6 bg-white rounded-[32px] border border-gray-100">
+          <div className="overflow-x-auto w-full">
+            <table className="w-full">
               <thead className="bg-[#f8f9fc]">
                 <tr>
-                  <th className="px-6 py-4 text-left">Producto</th>
+                  <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm">
+                    Producto
+                  </th>
 
-                  <th className="px-6 py-4 text-left">Tienda</th>
+                  <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm">
+                    Tienda
+                  </th>
 
-                  <th className="px-6 py-4 text-left">Motivo</th>
+                  <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm">
+                    Motivo
+                  </th>
 
-                  <th className="px-6 py-4 text-left">Cantidad</th>
+                  <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm">
+                    Cantidad
+                  </th>
 
-                  <th className="px-6 py-4 text-left">Estado</th>
+                  <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm">
+                    Estado
+                  </th>
 
-                  <th className="px-6 py-4 text-left">Fecha</th>
+                  <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm">
+                    Fecha
+                  </th>
                 </tr>
               </thead>
 
               <tbody>
                 {filteredData.map((item) => (
                   <tr key={item.id} className="border-b border-gray-100">
-                    <td className="px-6 py-4">{item.producto}</td>
+                    <td className="px-4 py-4 break-words max-w-[220px]">
+                      {item.producto}
+                    </td>
 
-                    <td className="px-6 py-4">{item.tienda}</td>
+                    <td className="px-4 py-4 break-words">{item.tienda}</td>
 
-                    <td className="px-6 py-4">{item.motivo}</td>
+                    <td className="px-4 py-4 break-words max-w-[180px]">
+                      {item.motivo}
+                    </td>
 
-                    <td className="px-6 py-4">{item.cantidad}</td>
+                    <td className="px-3 sm:px-6 py-4 text-sm">
+                      {item.cantidad}
+                    </td>
 
-                    <td className="px-6 py-4">{item.estado}</td>
+                    <td className="px-3 sm:px-6 py-4 text-sm">{item.estado}</td>
 
-                    <td className="px-6 py-4">
+                    <td className="px-3 sm:px-6 py-4 text-sm">
                       {item.fecha.toLocaleDateString("es-CO")}
                     </td>
                   </tr>

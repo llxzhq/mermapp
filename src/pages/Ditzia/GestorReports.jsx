@@ -229,7 +229,7 @@ export default function GestorReports() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6fa] px-5 pt-8 pb-28 lg:px-8">
+    <div className="min-h-screen bg-[#f5f6fa] px-4 sm:px-5 lg:px-8 pt-8 pb-28 overflow-x-hidden">
       <Toaster position="top-center" />
 
       <div className="max-w-7xl mx-auto">

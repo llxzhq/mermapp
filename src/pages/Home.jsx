@@ -87,9 +87,13 @@ export default function Home() {
 
       const data = res.data?.data || [];
 
-      console.log("MERMAS:", data);
+      const sortedData = [...data].sort(
+        (a, b) => new Date(b.fechaHoraActual) - new Date(a.fechaHoraActual),
+      );
 
-      setMermas(data);
+      console.log("MERMAS:", sortedData);
+
+      setMermas(sortedData);
 
       // =========================================
       // TOTAL MERMAS
@@ -456,7 +460,7 @@ export default function Home() {
 
                       <div className="flex flex-wrap gap-2 mt-3">
                         <span className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">
-                          {item.cantidadICG} uds
+                          {item.cantidadICG} {item.unidadMedidaICG || "uds"}
                         </span>
 
                         <span className="bg-red-100 text-red-600 text-xs px-3 py-1 rounded-full">

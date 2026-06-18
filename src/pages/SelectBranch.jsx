@@ -7,6 +7,7 @@ import LogoCafeDuranGris from "../assets/images/Logo_gris.png";
 import LogoMermas from "../assets/images/logotipo_mermas.png";
 
 import { getBranchesAdapter } from "../adapters/branches.adapter";
+import { getAllBranchesAdapter } from "../adapters/branches.adapter";
 import ModalAlert from "../components/modals/ModalAlert";
 
 export default function SelectBranch() {
@@ -15,6 +16,8 @@ export default function SelectBranch() {
   const [branches, setBranches] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isGlobal, setIsGlobal] = useState(false);
+  const [search, setSearch] = useState("");
 
   const [showAlert, setShowAlert] = useState(false);
   const [titleAlert, setTitleAlert] = useState("Atención");
@@ -61,7 +64,42 @@ export default function SelectBranch() {
     }
   };
 
+  const getAllBranches = async () => {
+    setLoading(true);
+
+    try {
+      // Si ya está en global, volver a sucursales asignadas
+      if (isGlobal) {
+        const ruta = localStorage.getItem("ruta");
+
+        const response = await getBranchesAdapter(ruta);
+
+        setBranches(response.data || []);
+        setIsGlobal(false);
+        setSearch("");
+
+        return;
+      }
+
+      // Si no está en global, cargar todas
+      const response = await getAllBranchesAdapter();
+
+      console.log("🌎 TODAS LAS SUCURSALES:", response);
+
+      setBranches(response.data || []);
+      setIsGlobal(true);
+    } catch (err) {
+      console.log("💥 ERROR GLOBAL:", err);
+
+      setShowAlert(true);
+      setTitleAlert("Error al cargar sucursales");
+      setMessageAlert1("No se pudieron cargar las sucursales.");
+    } finally {
+      setLoading(false);
+    }
+  };
   
+
   // const getBranches = async () => {
 
   //   setLoading(true);
@@ -130,6 +168,10 @@ export default function SelectBranch() {
     }, 250);
   };
 
+  const filteredBranches = branches.filter((branch) =>
+    branch.tienda.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <div className="min-h-screen bg-white flex flex-col justify-between">
       <div className="w-full max-w-sm mx-auto px-5">
@@ -141,6 +183,24 @@ export default function SelectBranch() {
           </p>
         </div>
 
+        <div className="flex justify-center mt-6 mb-7">
+          <button
+            onClick={getAllBranches}
+            className={`
+      px-6 py-3 rounded-2xl text-sm font-semibold
+      shadow-sm border transition-all duration-200
+      hover:scale-105 active:scale-95
+      ${
+        isGlobal
+          ? "bg-black text-white border-black shadow-md"
+          : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+      }
+    `}
+          >
+            {isGlobal ? "Mis sucursales" : "Ver todas las sucursales"}
+          </button>
+        </div>
+
         {/* LOADING */}
         {loading && (
           <p className="text-center text-gray-400 text-sm">
@@ -148,14 +208,30 @@ export default function SelectBranch() {
           </p>
         )}
 
+        {isGlobal && (
+          <div className="mt-5 mb-4">
+            <input
+              type="text"
+              placeholder="Buscar sucursal..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="
+        w-full px-4 py-3 rounded-xl
+        border border-gray-200
+        text-sm outline-none
+      "
+            />
+          </div>
+        )}
+
         {/* LISTA */}
         <div className="space-y-3">
-          {branches.map((branch, index) => {
+          {filteredBranches.map((branch, index) => {
             const isSelected = selected === branch.idTienda;
 
             return (
               <motion.div
-                key={branch.idTienda}
+                key={branch.tokenClave}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleSelect(branch)}
                 className={`

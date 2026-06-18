@@ -25,3 +25,9 @@ export const getBranchesAdapter = async (ruta) => {
     };
   }
 };
+
+export const getAllBranchesAdapter = async () => {
+  const res = await api.get(`/mermas/stores-all`);
+
+  return res.data;
+};
