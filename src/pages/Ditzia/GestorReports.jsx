@@ -39,7 +39,6 @@ export default function GestorReports() {
 
   const apiUrl = "http://192.168.212.8:8080";
 
-  
   // =========================================
   // FETCH
   // =========================================
@@ -58,6 +57,11 @@ export default function GestorReports() {
           id: item.id,
 
           producto: item.producto || "Producto",
+
+          codigoINVU: item.codigoProducto || "-",
+
+          codigoSAP:
+            item.codigoIntegracionProducto || item.codigoIntegracion || "-",
 
           tienda: item.nombreTienda || "Sin tienda",
 
@@ -190,8 +194,6 @@ export default function GestorReports() {
 
     const totalProductos = filteredData.length;
 
-    
-
     return {
       pendientes,
       procesadas,
@@ -211,6 +213,8 @@ export default function GestorReports() {
 
     const excelData = filteredData.map((item) => ({
       Producto: item.producto,
+      CodigoINVU: item.codigoINVU,
+      CodigoSAP: item.codigoSAP,
       Tienda: item.tienda,
       Motivo: item.motivo,
       Tipo: item.tipo,
@@ -221,6 +225,29 @@ export default function GestorReports() {
     }));
 
     const ws = XLSX.utils.json_to_sheet(excelData);
+
+    ws["!cols"] = [
+      { wch: 40 }, // Producto
+      { wch: 15 }, // Código INVU
+      { wch: 18 }, // Código SAP
+      { wch: 30 }, // Tienda
+      { wch: 35 }, // Motivo
+      { wch: 15 }, // Tipo
+      { wch: 12 }, // Cantidad
+      { wch: 15 }, // Estado
+      { wch: 20 }, // Documento SAP
+      { wch: 15 }, // Fecha
+    ];
+
+    const colWidths = Object.keys(excelData[0]).map((key) => ({
+      wch:
+        Math.max(
+          key.length,
+          ...excelData.map((row) => String(row[key] || "").length),
+        ) + 5,
+    }));
+
+    ws["!cols"] = colWidths;
 
     const wb = XLSX.utils.book_new();
 
@@ -479,6 +506,14 @@ export default function GestorReports() {
                   </th>
 
                   <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500">
+                    Código INVU
+                  </th>
+
+                  <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500">
+                    Código SAP
+                  </th>
+
+                  <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500">
                     Tienda
                   </th>
 
@@ -523,6 +558,14 @@ export default function GestorReports() {
                     >
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
                         {item.producto}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {item.codigoINVU}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-600 font-medium">
+                        {item.codigoSAP}
                       </td>
 
                       <td className="px-6 py-4 text-sm text-gray-600">

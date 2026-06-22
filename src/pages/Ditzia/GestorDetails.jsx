@@ -209,7 +209,7 @@ export default function GestorDetails() {
               </span>
 
               <span className="text-[10px] bg-white/20 backdrop-blur-md text-white px-2 py-1 rounded-full">
-                {merma?.cantidadICG} unidades
+                {merma?.cantidadICG} {merma?.unidadMedidaICG}
               </span>
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function GestorDetails() {
                 </p>
 
                 <p className="text-sm font-semibold text-gray-900">
-                  {merma?.cantidadICG}
+                  {merma?.cantidadICG} {merma?.unidadMedidaICG}
                 </p>
               </div>
 

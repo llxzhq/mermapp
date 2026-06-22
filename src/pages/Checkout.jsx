@@ -35,7 +35,9 @@ export default function Checkout() {
 
   const [codigoProducto, setCodigoProducto] = useState([]);
 
-  const [codigoIntegracionProducto, setCodigoIntegracionProducto] = useState([]);
+  const [codigoIntegracionProducto, setCodigoIntegracionProducto] = useState(
+    [],
+  );
 
   const [rawMaterials, setRawMaterials] = useState([]);
 
@@ -207,6 +209,10 @@ export default function Checkout() {
 
     setProducto(prod);
 
+    setIdMenu(prod.idMenu || "");
+    setCodigoProducto(prod.codigo || "");
+    setCodigoIntegracionProducto(prod.codigoIntegracion || "");
+
     setMotivo(null);
 
     setLoadingMotivos(true);
@@ -347,9 +353,25 @@ export default function Checkout() {
         "Grabado",
         username || usuarioNombre || "usuario_desconocido",
       );
-      formData.append("UnidadMedidaICG", "Gr");
+      
+      formData.append("UnidadMedidaICG", unidad === "unidades" ? "Und" : "Gr");
 
       formData.append("IdTienda", idTienda);
+
+      formData.append("IdMenu", producto?.idMenu || "");
+
+      formData.append("CodigoProducto", producto?.codigo || "");
+
+      formData.append(
+        "CodigoIntegracionProducto",
+        producto?.codigoIntegracion || "",
+      );
+
+      console.log({
+        idMenu: producto?.idMenu,
+        codigoProducto: producto?.codigo,
+        codigoIntegracionProducto: producto?.codigoIntegracion,
+      });
 
       const res = await api.post("/mermas/insert-merma", formData);
 
@@ -937,8 +959,8 @@ export default function Checkout() {
                       </p>
 
                       {/* UNIDADES */}
-                      <div className="grid grid-cols-3 gap-3 mb-5">
-                        {["unidades", "gramos", "oz"].map((u) => (
+                      <div className="grid grid-cols-2 gap-3 mb-5">
+                        {["unidades", "gramos"].map((u) => (
                           <button
                             key={u}
                             type="button"

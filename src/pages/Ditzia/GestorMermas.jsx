@@ -198,6 +198,10 @@ export default function HistorialGestora() {
 
           original: item,
 
+          codigoSAP: item.codigoSAP,
+          almacen: item.almacen,
+          idTienda: item.idTienda,
+
           producto: item.producto || "Producto",
 
           tienda: item.nombreTienda || "Sin tienda",
@@ -350,6 +354,27 @@ export default function HistorialGestora() {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
+  };
+
+  // =========================================
+  // GENERAR SAP
+  // =========================================
+  const handleGenerateSAP = async () => {
+    if (selectedIds.length === 0) {
+      toast.error("Selecciona al menos una merma");
+      return;
+    }
+
+    try {
+      await api.post("/mermas/generate-sap", {
+        mermaIds: selectedIds,
+      });
+
+      toast.success("Correo SAP enviado");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo generar SAP");
+    }
   };
 
   // =========================================
@@ -586,20 +611,28 @@ export default function HistorialGestora() {
           </button>
 
           {multiSelectMode && (
-            <button
-              onClick={() => {
-                if (selectedIds.length === 0) {
-                  toast.error("Selecciona mermas");
+            <>
+              <button
+                onClick={handleGenerateSAP}
+                className="px-4 py-2 rounded-2xl bg-blue-600 text-white text-sm font-medium"
+              >
+                Generar SAP ({selectedIds.length})
+              </button>
 
-                  return;
-                }
+              <button
+                onClick={() => {
+                  if (selectedIds.length === 0) {
+                    toast.error("Selecciona mermas");
+                    return;
+                  }
 
-                setShowProcessModal(true);
-              }}
-              className="px-4 py-2 rounded-2xl bg-green-600 text-white text-sm font-medium"
-            >
-              Procesar ({selectedIds.length})
-            </button>
+                  setShowProcessModal(true);
+                }}
+                className="px-4 py-2 rounded-2xl bg-green-600 text-white text-sm font-medium"
+              >
+                Procesar ({selectedIds.length})
+              </button>
+            </>
           )}
         </div>
       </div>
