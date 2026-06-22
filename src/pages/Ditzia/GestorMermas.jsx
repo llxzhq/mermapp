@@ -191,43 +191,43 @@ export default function HistorialGestora() {
       const res = await api.get("/mermas");
 
       const mapped = (res.data?.data || []).map((item) => {
-        const fecha = new Date(item.fechaHoraActual);
+        const merma = item.merma;
+
+        const fecha = new Date(merma.fechaHoraActual);
 
         return {
-          id: item.id,
+          id: merma.id,
 
-          original: item,
+          original: merma,
 
-          codigoSAP: item.codigoSAP,
-          almacen: item.almacen,
-          idTienda: item.idTienda,
+          menus: item.menus || [],
 
-          producto: item.producto || "Producto",
+          codigoSAP: merma.codigoIntegracionProducto,
+          almacen: merma.almacen,
+          idTienda: merma.idTienda,
 
-          tienda: item.nombreTienda || "Sin tienda",
+          producto: merma.producto || "Producto",
+
+          tienda: merma.nombreTienda || "Sin tienda",
 
           usuario:
-            item.grabado ||
-            item.usuario ||
-            item.nombreUsuario ||
-            item.createdBy ||
+            merma.grabado ||
+            merma.usuario ||
+            merma.nombreUsuario ||
+            merma.createdBy ||
             "Supervisor",
 
-          motivo: item.selectMotivo,
+          motivo: merma.selectMotivo,
 
           tipo:
-            item.detalleProducto === "materia" ? "Materia prima" : "Preparada",
+            merma.detalleProducto === "materia" ? "Materia prima" : "Preparada",
 
-          cantidad: item.cantidadICG,
+          cantidad: merma.cantidadICG,
 
-          unidad: item.unidad || "uds",
-
-          total: Number(
-            item.totalMerma || item.precioTotal || item.precio || 0,
-          ),
+          unidad: merma.unidadMedidaICG || "Und",
 
           estado:
-            item.docSapMerma && item.docSapMerma.trim() !== ""
+            merma.docSapMerma && merma.docSapMerma.trim() !== ""
               ? "Procesada"
               : "Pendiente",
 
@@ -243,8 +243,8 @@ export default function HistorialGestora() {
             minute: "2-digit",
           }),
 
-          imagen: item.rutaImagenMerma
-            ? `http://192.168.212.8:8080/mermas/image?ruta=${item.rutaImagenMerma}`
+          imagen: merma.rutaImagenMerma
+            ? `${apiUrl}/mermas/image?ruta=${merma.rutaImagenMerma}`
             : "https://placehold.co/300x300/png",
         };
       });

@@ -44,7 +44,7 @@ export default function MermaDetalle() {
       const res = await api.get("/mermas");
 
       const found = res.data?.data?.find(
-        (item) => String(item.id) === String(id),
+        (item) => String(item.merma?.id) === String(id),
       );
 
       if (!found) {
@@ -53,7 +53,9 @@ export default function MermaDetalle() {
         return;
       }
 
-      console.log("MERMA DETALLE:", found);
+      console.log("MERMA COMPLETA:", merma);
+      console.log("MENUS:", merma.menus);
+      console.log("RECETA:", receta);
 
       setMerma(found);
     } catch (error) {
@@ -108,10 +110,14 @@ export default function MermaDetalle() {
     );
   }
 
-  const procesada = merma.docSapMerma && merma.docSapMerma.trim() !== "";
+  const detalle = merma.merma;
 
-  const imageUrl = merma.rutaImagenMerma
-    ? `http://192.168.212.8:8080/mermas/image?ruta=${merma.rutaImagenMerma}`
+  const receta = merma.menus || [];
+
+  const procesada = detalle.docSapMerma && detalle.docSapMerma.trim() !== "";
+
+  const imageUrl = detalle.rutaImagenMerma
+    ? `${apiUrl}/mermas/image?ruta=${detalle.rutaImagenMerma}`
     : "https://placehold.co/600x400/png";
 
   return (
@@ -182,31 +188,31 @@ export default function MermaDetalle() {
               scale: 0.98,
             }}
             src={imageUrl}
-            alt={merma.producto}
+            alt={detalle.producto}
             onClick={() => setShowImageModal(true)}
             className="w-full h-64 object-cover cursor-zoom-in"
           />
 
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
             <p className="text-white text-lg font-semibold leading-tight">
-              {merma.producto}
+              {detalle.producto}
             </p>
 
             <div className="flex items-center gap-2 mt-2 flex-wrap">
               <span
                 className={`text-[10px] px-2 py-1 rounded-full font-semibold
                 ${
-                  merma.detalleProducto === "preparado"
+                  detalle.detalleProducto === "preparado"
                     ? "bg-blue-500/90 text-white"
                     : "bg-orange-500/90 text-white"
                 }
               `}
               >
-                {merma.detalleProducto || "Sin tipo"}
+                {detalle.detalleProducto || "Sin tipo"}
               </span>
 
               <span className="text-[10px] bg-white/20 backdrop-blur-md text-white px-2 py-1 rounded-full">
-                {merma.cantidadICG} {merma.unidadMedidaICG || "Und"}
+                {detalle.cantidadICG} {detalle.unidadMedidaICG || "Und"}
               </span>
             </div>
           </div>
@@ -240,7 +246,7 @@ export default function MermaDetalle() {
                 </p>
 
                 <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {merma.producto}
+                  {detalle.producto}
                 </p>
               </div>
             </div>
@@ -257,7 +263,7 @@ export default function MermaDetalle() {
                 </p>
 
                 <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {merma.cantidadICG} {merma.unidadMedidaICG || "Und"}
+                  {detalle.cantidadICG} {detalle.unidadMedidaICG || "Und"}
                 </p>
               </div>
             </div>
@@ -274,7 +280,7 @@ export default function MermaDetalle() {
                 </p>
 
                 <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {merma.nombreTienda}
+                  {detalle.nombreTienda}
                 </p>
               </div>
             </div>
@@ -291,10 +297,54 @@ export default function MermaDetalle() {
                 </p>
 
                 <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {merma.selectMotivo}
+                  {detalle.selectMotivo}
                 </p>
               </div>
             </div>
+
+            {receta.length > 0 && (
+              <div className="border-t border-gray-100 pt-5">
+                <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-4">
+                  Explosión de receta ({receta.length} componentes)
+                </p>
+
+                <div className="space-y-3">
+                  {receta.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-50 rounded-2xl p-4 border border-gray-100"
+                    >
+                      <div className="flex justify-between items-start gap-3">
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm text-gray-900">
+                            {item.nombreProd}
+                          </p>
+
+                          <p className="text-xs text-gray-500 mt-1">
+                            Código agrupación: {item.codigoBarraAgrupacion}
+                          </p>
+
+                          <p className="text-xs text-gray-500">
+                            Descripción receta: {item.descripcionProd}
+                          </p>
+
+                          <p className="text-xs text-gray-500">
+                            Status:{" "}
+                            {item.statusProd === 1 ? "Materia Prima" : "Insumo"}
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <div className="bg-white px-3 py-1 rounded-full text-xs font-semibold border">
+                            {item.cantidadProd} {item.unidad}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* FECHA */}
             <div className="flex items-start gap-3">
@@ -308,7 +358,7 @@ export default function MermaDetalle() {
                 </p>
 
                 <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {new Date(merma.fechaHoraActual).toLocaleString("es-CO")}
+                  {new Date(detalle.fechaHoraActual).toLocaleString("es-CO")}
                 </p>
               </div>
             </div>
@@ -325,7 +375,7 @@ export default function MermaDetalle() {
                 </p>
 
                 <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {merma.grabado || "N/A"}
+                  {detalle.grabado || "N/A"}
                 </p>
               </div>
             </div>
@@ -343,7 +393,7 @@ export default function MermaDetalle() {
                   </p>
 
                   <p className="text-sm font-semibold text-gray-900 mt-1">
-                    {merma.docSapMerma}
+                    {detalle.docSapMerma}
                   </p>
                 </div>
               </div>
@@ -399,7 +449,7 @@ export default function MermaDetalle() {
                 damping: 20,
               }}
               src={imageUrl}
-              alt={merma.producto}
+              alt={detalle.producto}
               onClick={(e) => e.stopPropagation()}
               className="max-w-full max-h-full rounded-[32px] object-contain"
             />
