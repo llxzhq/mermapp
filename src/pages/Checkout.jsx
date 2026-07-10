@@ -219,10 +219,17 @@ export default function Checkout() {
 
     if (tipo === "materia") {
       setProductoExtra({
-        codigoSAP: prod.codigoSAP || "",
-        codigoINVU: prod.codigoProd || prod.codigo || "",
+        codigoSAP: prod.codigoProd || "",
+        codigoINVU: prod.codigo || "",
         precio: prod.costo || "",
       });
+
+      // CAMPOS NECESARIOS PARA BACKEND
+      setIdMenu(prod.idmodificador || 0);
+
+      setCodigoProducto(prod.codigo || "");
+
+      setCodigoIntegracionProducto(prod.codigoProd || "");
 
       setMotivos([
         {
@@ -353,19 +360,16 @@ export default function Checkout() {
         "Grabado",
         username || usuarioNombre || "usuario_desconocido",
       );
-      
+
       formData.append("UnidadMedidaICG", unidad === "unidades" ? "Und" : "Gr");
 
       formData.append("IdTienda", idTienda);
 
-      formData.append("IdMenu", producto?.idMenu || "");
+      formData.append("IdMenu", idMenu);
 
-      formData.append("CodigoProducto", producto?.codigo || "");
+      formData.append("CodigoProducto", codigoProducto);
 
-      formData.append(
-        "CodigoIntegracionProducto",
-        producto?.codigoIntegracion || "",
-      );
+      formData.append("CodigoIntegracionProducto", codigoIntegracionProducto);
 
       console.log({
         idMenu: producto?.idMenu,
@@ -769,7 +773,7 @@ export default function Checkout() {
                     </div>
 
                     <h2 className="text-lg font-bold text-gray-900">
-                      Materia prima
+                      Ingredientes
                     </h2>
 
                     <p className="text-sm text-gray-500 mt-2 leading-relaxed">

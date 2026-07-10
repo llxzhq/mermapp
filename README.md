@@ -1,16 +1,80 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+MERMAPP
+┣ .vscode
+┣ backend
+┣ node_modules
+┣ public
+┣ src
+    ┣ adapters
+    ┃ ┣ auth
+    ┃ ┃ ┣ authAdapter.js
+    ┃ ┃ ┗ authConfig.js
+    ┃ ┣ branches.adapter.js
+    ┃ ┣ historial.adapter.js
+    ┃ ┣ mermas.adapter.js
+    ┃ ┗ products.adapter.js
+    ┣ assets
+    ┃ ┣ images
+    ┃ ┃ ┣ icons
+    ┃ ┃ ┃ ┗ dollar_sign.png
+    ┃ ┃ ┣ products
+    ┃ ┃ ┃ ┣ expreso_grande.jpg
+    ┃ ┃ ┃ ┣ expreso_mediano.jpg
+    ┃ ┃ ┃ ┗ expreso_pequeno.jpg
+    ┃ ┃ ┣ logo-multiApp.png
+    ┃ ┃ ┣ logotipo_mermas.png
+    ┃ ┃ ┣ logotipo_mermo.png
+    ┃ ┃ ┗ Logo_gris.png
+    ┃ ┗ react.svg
+    ┣ components
+    ┃ ┣ modals
+    ┃ ┃ ┗ ModalAlert.jsx
+    ┃ ┣ Navbar.jsx
+    ┃ ┣ NavbarDitzia.jsx
+    ┃ ┗ ProtectedRoute.jsx
+    ┣ context
+    ┃ ┗ AuthContext.jsx
+    ┣ data
+    ┃ ┗ data.js
+    ┣ layouts
+    ┃ ┣ Dashboard.jsx
+    ┃ ┣ DitziaLayout.jsx
+    ┃ ┗ Layout.jsx
+    ┣ pages
+    ┃ ┣ Ditzia
+    ┃ ┃ ┣ GestorDetails.jsx
+    ┃ ┃ ┣ GestorMermas.jsx
+    ┃ ┃ ┣ GestorReports.jsx
+    ┃ ┃ ┗ homeGestion.jsx
+    ┃ ┣ Checkout.jsx
+    ┃ ┣ Historial.jsx
+    ┃ ┣ Home.jsx
+    ┃ ┣ Login.jsx
+    ┃ ┣ Login2.jsx
+    ┃ ┣ MermaDetalle.jsx
+    ┃ ┣ Mermo.jsx
+    ┃ ┣ Profile.jsx
+    ┃ ┣ Register.jsx
+    ┃ ┣ Reports.jsx
+    ┃ ┣ ResetPassword.jsx
+    ┃ ┣ SelectBranch.jsx
+    ┃ ┗ Splash.jsx
+    ┣ services
+    ┃ ┗ api.js
+    ┣ utils
+    ┃ ┣ auth.js
+    ┃ ┗ constants.js
+    ┣ App.css
+    ┣ App.jsx
+    ┣ index.css
+    ┗ main.jsx
+┣ .env.development
+┣ .env.production
+┣ .gitignore
+┣ eslint.config.js
+┣ index.html
+┣ package-lock.json
+┣ package.json
+┣ README.md
+┣ tailwind.config.js
+┣ vite.config.js
+┣ web.config

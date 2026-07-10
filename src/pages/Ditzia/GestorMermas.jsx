@@ -50,6 +50,7 @@ function MermaCard({
                 imagen: item.imagen,
                 estado: item.estado,
               },
+              menus: item.menus || [],
             },
           });
         }
@@ -72,6 +73,7 @@ function MermaCard({
               imagen: item.imagen,
               estado: item.estado,
             },
+            menus: item.menus || [],
           },
         });
       }}

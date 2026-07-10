@@ -88,7 +88,9 @@ export default function Home() {
       const data = res.data?.data || [];
 
       const sortedData = [...data].sort(
-        (a, b) => new Date(b.fechaHoraActual) - new Date(a.fechaHoraActual),
+        (a, b) =>
+          new Date(b.merma?.fechaHoraActual) -
+          new Date(a.merma?.fechaHoraActual),
       );
 
       console.log("MERMAS:", sortedData);
@@ -104,7 +106,7 @@ export default function Home() {
       // TOTAL CANTIDAD
       // =========================================
       const cantidad = data.reduce(
-        (acc, item) => acc + Number(item.cantidadICG || 0),
+        (acc, item) => acc + Number(item.merma?.cantidadICG || 0),
         0,
       );
 
@@ -114,13 +116,13 @@ export default function Home() {
       const groupedProducts = {};
 
       data.forEach((item) => {
-        const producto = item.producto || "Otros";
+        const producto = item.merma?.producto || "Otros";
 
         if (!groupedProducts[producto]) {
           groupedProducts[producto] = 0;
         }
 
-        groupedProducts[producto] += Number(item.cantidadICG || 0);
+        groupedProducts[producto] += Number(item.merma?.cantidadICG || 0);
       });
 
       // =========================================
@@ -413,68 +415,72 @@ export default function Home() {
               </div>
 
               <div className="space-y-4">
-                {mermas.slice(0, 5).map((item) => (
-                  <motion.div
-                    key={item.id}
-                    whileTap={{
-                      scale: 0.985,
-                    }}
-                    onClick={() =>
-                      navigate(`/merma-detalle/${item.id}`, {
-                        state: item,
-                      })
-                    }
-                    className="
-                      bg-white
-                      rounded-[28px]
-                      p-4
-                      border border-gray-100
-                      shadow-sm
-                      flex items-center gap-4
-                      cursor-pointer
-                    "
-                  >
-                    <img
-                      src={
-                        item.rutaImagenMerma
-                          ? `http://192.168.212.8:8080/mermas/image?ruta=${item.rutaImagenMerma}`
-                          : "https://placehold.co/300x300/png"
+                {mermas.slice(0, 5).map((item) => {
+                  const detalle = item.merma;
+
+                  return (
+                    <motion.div
+                      key={detalle.id}
+                      whileTap={{
+                        scale: 0.985,
+                      }}
+                      onClick={() =>
+                        navigate(`/mermas/detalle/${detalle.id}`, {
+                          state: item,
+                        })
                       }
-                      alt={item.producto}
                       className="
-                        w-20 h-20
-                        rounded-2xl
-                        object-cover
-                        shrink-0
+                        bg-white
+                        rounded-[28px]
+                        p-4
+                        border border-gray-100
+                        shadow-sm
+                        flex items-center gap-4
+                        cursor-pointer
                       "
-                    />
+                    >
+                      <img
+                        src={
+                          detalle.rutaImagenMerma
+                            ? `http://192.168.212.8:8080/mermas/image?ruta=${detalle.rutaImagenMerma}`
+                            : "https://placehold.co/300x300/png"
+                        }
+                        alt={detalle.producto}
+                        className="
+                          w-20 h-20
+                          rounded-2xl
+                          object-cover
+                          shrink-0
+                        "
+                      />
 
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900 line-clamp-2">
-                        {item.producto}
-                      </p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-900 line-clamp-2">
+                          {detalle.producto}
+                        </p>
 
-                      <p className="text-sm text-gray-400 mt-1">
-                        {item.nombreTienda}
-                      </p>
+                        <p className="text-sm text-gray-400 mt-1">
+                          {item.nombreTienda}
+                        </p>
 
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        <span className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">
-                          {item.cantidadICG} {item.unidadMedidaICG || "uds"}
-                        </span>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <span className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">
+                            {detalle.cantidadICG} {detalle.unidadMedidaICG || "uds"}
+                          </span>
 
-                        <span className="bg-red-100 text-red-600 text-xs px-3 py-1 rounded-full">
-                          {item.selectMotivo}
-                        </span>
+                          <span className="bg-red-100 text-red-600 text-xs px-3 py-1 rounded-full">
+                            {detalle.selectMotivo}
+                          </span>
+                        </div>
                       </div>
-                    </div>
 
-                    <ChevronRight
-                      size={18}
-                      className="text-gray-300 shrink-0"
-                    />
-                  </motion.div>
-                ))}
+                      <ChevronRight
+                        size={18}
+                        className="text-gray-300 shrink-0"
+                      />
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </>

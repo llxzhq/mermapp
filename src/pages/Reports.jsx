@@ -63,38 +63,55 @@ export default function Reports() {
       const mermasResponse = await api.get("/mermas");
 
       const mermas = mermasResponse.data?.data || [];
+      console.log("REPORTES:", mermas);
 
       const filtered = mermas
         .filter((item) => {
+          const detalle = item.merma;
+
           if (isGlobal) return true;
 
-          return tiendasPermitidas.includes(Number(item.idTienda));
+          return tiendasPermitidas.includes(Number(detalle?.idTienda));
         })
-        .map((item) => ({
-          id: item.id,
+        .map((item) => {
+          const detalle = item.merma;
+          const fecha = new Date(detalle?.fechaHoraActual);
 
-          producto: item.producto,
+          return {
+            id: detalle?.id,
 
-          tienda: item.nombreTienda,
+            producto: detalle?.producto,
 
-          motivo: item.selectMotivo,
+            tienda: detalle?.nombreTienda,
 
-          cantidad: item.cantidadICG,
+            motivo: detalle?.selectMotivo,
 
-          unidad: item.unidadMedidaICG,
+            cantidad: detalle?.cantidadICG,
 
-          estado:
-            item.docSapMerma && item.docSapMerma.trim() !== ""
-              ? "Procesada"
-              : "Pendiente",
+            unidad: detalle?.unidadMedidaICG,
 
-          documentoSAP: item.docSapMerma || "-",
+            estado:
+              detalle?.docSapMerma && detalle.docSapMerma.trim() !== ""
+                ? "Procesada"
+                : "Pendiente",
 
-          fecha: new Date(item.fechaHoraActual),
-        }))
+            documentoSAP: detalle?.docSapMerma || "-",
+
+            fecha,
+
+            fechaTexto: fecha.toLocaleDateString("es-CO", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            }),
+          };
+        })
         .sort((a, b) => b.fecha - a.fecha);
 
+      // AGREGAR ESTO
       setData(filtered);
+
+      console.log("REPORTES PROCESADOS:", filtered);
     } catch (error) {
       console.error(error);
 
@@ -196,13 +213,7 @@ export default function Reports() {
     <div className="min-h-screen bg-[#f5f6fa] px-4 sm:px-5 lg:px-8 pt-8 pb-28 overflow-x-hidden">
       <Toaster position="top-center" />
 
-      <div
-        className="w-full mx-auto"
-        style={{
-          background: "red",
-          minHeight: "100vh",
-        }}
-      >
+      <div className="w-full max-w-[1600px] mx-auto">
         {/* HEADER */}
         <div className="sticky top-0 z-30 backdrop-blur-xl bg-white/80 border border-white/40 px-5 pt-8 pb-5 rounded-[32px]">
           <motion.img
@@ -361,10 +372,84 @@ export default function Reports() {
           </div>
         </div>
 
+        {/* MOBILE */}
+        <div className="lg:hidden mt-6 space-y-4">
+          {loading ? (
+            [...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-[28px] p-5 h-40 animate-pulse"
+              />
+            ))
+          ) : filteredData.length === 0 ? (
+            <div className="bg-white rounded-[28px] p-8 text-center text-gray-400">
+              No hay resultados
+            </div>
+          ) : (
+            filteredData.map((item) => (
+              <div
+                key={item.id}
+                className="
+          bg-white
+          rounded-[28px]
+          p-5
+          border border-gray-100
+          shadow-sm
+        "
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="font-semibold text-gray-900 text-sm leading-tight">
+                    {item.producto}
+                  </h3>
+
+                  <span
+                    className={`
+              px-3 py-1 rounded-full text-xs font-semibold
+              ${
+                item.estado === "Procesada"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-yellow-100 text-yellow-700"
+              }
+            `}
+                  >
+                    {item.estado}
+                  </span>
+                </div>
+
+                <div className="mt-4 space-y-2 text-sm">
+                  <div>
+                    <span className="text-gray-500">Sucursal:</span>{" "}
+                    {item.tienda}
+                  </div>
+
+                  <div>
+                    <span className="text-gray-500">Motivo:</span> {item.motivo}
+                  </div>
+
+                  <div>
+                    <span className="text-gray-500">Cantidad:</span>{" "}
+                    {item.cantidad} {item.unidad || ""}
+                  </div>
+
+                  <div>
+                    <span className="text-gray-500">SAP:</span>{" "}
+                    {item.documentoSAP}
+                  </div>
+
+                  <div>
+                    <span className="text-gray-500">Fecha:</span>{" "}
+                    {item.fechaTexto}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
         {/* TABLA */}
-        <div className="mt-6 bg-white rounded-[32px] border border-gray-100">
-          <div className="overflow-x-auto w-full">
-            <table className="w-full">
+        <div className="hidden lg:block mt-6 bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[900px]">
               <thead className="bg-[#f8f9fc]">
                 <tr>
                   <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm">
@@ -406,8 +491,8 @@ export default function Reports() {
                       {item.motivo}
                     </td>
 
-                    <td className="px-3 sm:px-6 py-4 text-sm">
-                      {item.cantidad}
+                    <td className="px-6 py-4 text-sm">
+                      {item.cantidad} {item.unidad}
                     </td>
 
                     <td className="px-3 sm:px-6 py-4 text-sm">{item.estado}</td>

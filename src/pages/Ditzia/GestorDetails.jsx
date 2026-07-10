@@ -59,7 +59,9 @@ export default function GestorDetails() {
     );
   }
 
-  const { merma } = state;
+  const { merma, menus = [] } = state;
+  console.log("MERMA:", merma);
+  console.log("MENUS:", menus);
 
   // =========================================
   // PROCESAR
@@ -119,7 +121,7 @@ export default function GestorDetails() {
         transition={{
           duration: 0.35,
         }}
-        className="w-full max-w-sm"
+        className="w-full max-w-sm lg:max-w-6xl mx-auto"
       >
         {/* HEADER */}
         <div className="flex items-center justify-between mb-5 px-1">
@@ -152,238 +154,291 @@ export default function GestorDetails() {
             {merma?.docSapMerma ? "Procesada" : "Pendiente"}
           </div>
         </div>
-
-        {/* IMAGEN */}
-        <motion.div
-          initial={{
-            opacity: 0,
-            scale: 0.96,
-          }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
-          transition={{
-            delay: 0.05,
-          }}
-          className="relative overflow-hidden rounded-[28px] bg-white border border-gray-200 shadow-sm mb-4"
-        >
-          <div
-            onClick={() => setShowImageModal(true)}
-            className="relative overflow-hidden cursor-zoom-in group"
-          >
-            <img
-              src={
-                merma?.rutaImagenMerma
-                  ? `http://192.168.212.8:8080/mermas/image?ruta=${merma.rutaImagenMerma}`
-                  : "https://placehold.co/600x400/png"
-              }
-              alt="Merma"
-              className="
-                w-full h-72 object-cover
-                transition-transform duration-500
-                group-hover:scale-110
-                active:scale-110
-              "
-            />
-
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
-          </div>
-
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-            <p className="text-white text-lg font-semibold leading-tight">
-              {merma?.producto}
-            </p>
-
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
-              <span
-                className={`text-[10px] px-2 py-1 rounded-full font-semibold
-                ${
-                  merma?.detalleProducto === "preparado"
-                    ? "bg-blue-500/90 text-white"
-                    : "bg-orange-500/90 text-white"
-                }
-              `}
+        <div className="lg:grid lg:grid-cols-2 lg:gap-6">
+          <div>
+            {/* IMAGEN */}
+            <motion.div
+              initial={{
+                opacity: 0,
+                scale: 0.96,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+              transition={{
+                delay: 0.05,
+              }}
+              className="relative overflow-hidden rounded-[28px] bg-white border border-gray-200 shadow-sm mb-4"
+            >
+              <div
+                onClick={() => setShowImageModal(true)}
+                className="relative overflow-hidden cursor-zoom-in group"
               >
-                {merma?.detalleProducto || "Sin tipo"}
-              </span>
+                <img
+                  src={
+                    merma?.rutaImagenMerma
+                      ? `http://192.168.212.8:8080/mermas/image?ruta=${merma.rutaImagenMerma}`
+                      : "https://placehold.co/600x400/png"
+                  }
+                  alt="Merma"
+                  className="
+                    w-full h-72 object-cover
+                    transition-transform duration-500
+                    group-hover:scale-110
+                    active:scale-110
+                  "
+                />
 
-              <span className="text-[10px] bg-white/20 backdrop-blur-md text-white px-2 py-1 rounded-full">
-                {merma?.cantidadICG} {merma?.unidadMedidaICG}
-              </span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* INFO */}
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 14,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.08,
-          }}
-          className="bg-white rounded-[28px] border border-gray-200 shadow-sm p-5 mb-4"
-        >
-          <div className="space-y-5">
-            <div>
-              <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
-                Producto
-              </p>
-
-              <p className="text-sm font-semibold text-gray-900">
-                {merma?.producto}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
-                  Cantidad
-                </p>
-
-                <p className="text-sm font-semibold text-gray-900">
-                  {merma?.cantidadICG} {merma?.unidadMedidaICG}
-                </p>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
               </div>
 
-              <div>
-                <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
-                  Tipo
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                <p className="text-white text-lg font-semibold leading-tight">
+                  {merma?.producto}
                 </p>
 
-                <p className="text-sm font-semibold text-gray-900 capitalize">
-                  {merma?.detalleProducto || "N/A"}
-                </p>
-              </div>
-            </div>
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  <span
+                    className={`text-[10px] px-2 py-1 rounded-full font-semibold
+                    ${
+                      merma?.detalleProducto === "preparado"
+                        ? "bg-blue-500/90 text-white"
+                        : "bg-orange-500/90 text-white"
+                    }
+                  `}
+                  >
+                    {merma?.detalleProducto || "Sin tipo"}
+                  </span>
 
-            <div>
-              <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
-                Motivo
-              </p>
-
-              <div className="inline-flex items-center gap-2 bg-red-50 text-red-700 px-3 py-2 rounded-2xl text-sm font-medium">
-                <AlertTriangle size={15} />
-
-                {merma?.selectMotivo}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
-                Tienda
-              </p>
-
-              <div className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-3 py-2 rounded-2xl text-sm font-medium">
-                <Store size={15} />
-
-                {merma?.nombreTienda}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
-                Registrado por
-              </p>
-
-              <p className="text-sm font-semibold text-gray-900">
-                {merma?.grabado || "N/A"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
-                Fecha
-              </p>
-
-              <p className="text-sm font-semibold text-gray-900">
-                {merma?.fechaHoraActual
-                  ? new Date(merma.fechaHoraActual).toLocaleString("es-CO")
-                  : "N/A"}
-              </p>
-            </div>
-
-            {merma?.docSapMerma && (
-              <div>
-                <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
-                  Documento SAP
-                </p>
-
-                <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-2 rounded-2xl text-sm font-semibold">
-                  <CheckCircle2 size={15} />
-
-                  {merma.docSapMerma}
+                  <span className="text-[10px] bg-white/20 backdrop-blur-md text-white px-2 py-1 rounded-full">
+                    {merma?.cantidadICG} {merma?.unidadMedidaICG}
+                  </span>
                 </div>
               </div>
-            )}
-          </div>
-        </motion.div>
+            </motion.div>
 
-        {/* PROCESAR */}
-        {!merma?.docSapMerma && (
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 14,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              delay: 0.12,
-            }}
-            className="bg-white rounded-[28px] border border-gray-200 shadow-sm p-5 mb-4"
-          >
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-3xl bg-green-100 flex items-center justify-center">
-                <FileCheck2 size={30} className="text-green-600" />
-              </div>
-            </div>
-
-            <h2 className="text-center text-lg font-bold text-gray-900">
-              Procesar merma
-            </h2>
-
-            <p className="text-sm text-gray-400 text-center mt-1">
-              Ingresa el documento SAP
-            </p>
-
-            <input
-              value={sapDocument}
-              onChange={(e) => setSapDocument(e.target.value)}
-              placeholder="Documento SAP"
-              className="w-full bg-[#f6f7fb] border border-gray-100 rounded-2xl p-4 outline-none text-sm mt-5"
-            />
-
-            <button
-              disabled={processing}
-              onClick={handleProcess}
-              className="w-full mt-4 bg-black text-white py-4 rounded-2xl font-medium shadow-lg disabled:opacity-60"
+            {/* INFO */}
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 14,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              transition={{
+                delay: 0.08,
+              }}
+              className="bg-white rounded-[28px] border border-gray-200 shadow-sm p-5 mb-4"
             >
-              {processing ? "Procesando..." : "Procesar merma"}
-            </button>
-          </motion.div>
-        )}
+              <div className="space-y-5">
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
+                    Producto
+                  </p>
 
-        {/* BOTÓN ELIMINAR */}
-        <div className="pb-24">
-          <motion.button
-            whileTap={{
-              scale: 0.98,
-            }}
-            onClick={() => setShowDeleteModal(true)}
-            className="w-full bg-red-500 text-white py-4 rounded-2xl font-medium shadow-lg"
-          >
-            Eliminar merma
-          </motion.button>
-        </div>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {merma?.producto}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
+                      Cantidad
+                    </p>
+
+                    <p className="text-sm font-semibold text-gray-900">
+                      {merma?.cantidadICG} {merma?.unidadMedidaICG}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
+                      Tipo
+                    </p>
+
+                    <p className="text-sm font-semibold text-gray-900 capitalize">
+                      {merma?.detalleProducto || "N/A"}
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
+                    Motivo
+                  </p>
+
+                  <div className="inline-flex items-center gap-2 bg-red-50 text-red-700 px-3 py-2 rounded-2xl text-sm font-medium">
+                    <AlertTriangle size={15} />
+
+                    {merma?.selectMotivo}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
+                    Tienda
+                  </p>
+
+                  <div className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-3 py-2 rounded-2xl text-sm font-medium">
+                    <Store size={15} />
+
+                    {merma?.nombreTienda}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
+                    Registrado por
+                  </p>
+
+                  <p className="text-sm font-semibold text-gray-900">
+                    {merma?.grabado || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
+                    Fecha
+                  </p>
+
+                  <p className="text-sm font-semibold text-gray-900">
+                    {merma?.fechaHoraActual
+                      ? new Date(merma.fechaHoraActual).toLocaleString("es-CO")
+                      : "N/A"}
+                  </p>
+                </div>
+
+                {merma?.docSapMerma && (
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
+                      Documento SAP
+                    </p>
+
+                    <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-2 rounded-2xl text-sm font-semibold">
+                      <CheckCircle2 size={15} />
+
+                      {merma.docSapMerma}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>  
+        
+
+          <div>
+            {menus.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-white rounded-[28px] border border-gray-200 shadow-sm p-5 mb-4"
+              >
+                <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-4">
+                  Explosión de receta ({menus.length} componentes)
+                </p>
+
+                <div className="space-y-3">
+                  {menus.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-50 rounded-2xl p-4 border border-gray-100"
+                    >
+                      <div className="flex justify-between items-start gap-3">
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm text-gray-900">
+                            {item.nombreProd}
+                          </p>
+
+                          <p className="text-xs text-gray-500 mt-1">
+                            Código agrupación: {item.codigoBarraAgrupacion}
+                          </p>
+
+                          <p className="text-xs text-gray-500">
+                            Descripción receta: {item.descripcionProd}
+                          </p>
+
+                          <p className="text-xs text-gray-500">
+                            Status:{" "}
+                            {item.statusProd === 1 ? "Materia Prima" : "Insumo"}
+                          </p>
+                        </div>
+
+                        <div className="bg-white px-3 py-1 rounded-full text-xs font-semibold border">
+                          {item.cantidadProd} {item.unidad}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* PROCESAR */}
+            {!merma?.docSapMerma && (
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 14,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  delay: 0.12,
+                }}
+                className="bg-white rounded-[28px] border border-gray-200 shadow-sm p-5 mb-4"
+              >
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 rounded-3xl bg-green-100 flex items-center justify-center">
+                    <FileCheck2 size={30} className="text-green-600" />
+                  </div>
+                </div>
+
+                <h2 className="text-center text-lg font-bold text-gray-900">
+                  Procesar merma
+                </h2>
+
+                <p className="text-sm text-gray-400 text-center mt-1">
+                  Ingresa el documento SAP
+                </p>
+
+                <input
+                  value={sapDocument}
+                  onChange={(e) => setSapDocument(e.target.value)}
+                  placeholder="Documento SAP"
+                  className="w-full bg-[#f6f7fb] border border-gray-100 rounded-2xl p-4 outline-none text-sm mt-5"
+                />
+
+                <button
+                  disabled={processing}
+                  onClick={handleProcess}
+                  className="w-full mt-4 bg-black text-white py-4 rounded-2xl font-medium shadow-lg disabled:opacity-60"
+                >
+                  {processing ? "Procesando..." : "Procesar merma"}
+                </button>
+              </motion.div>
+            )}
+
+            {/* BOTÓN ELIMINAR */}
+            <div className="pb-24">
+              <motion.button
+                whileTap={{
+                  scale: 0.98,
+                }}
+                onClick={() => setShowDeleteModal(true)}
+                className="w-full bg-red-500 text-white py-4 rounded-2xl font-medium shadow-lg"
+              >
+                Eliminar merma
+              </motion.button>
+            </div>
+          </div>
+        </div>  
       </motion.div>
 
       {/* MODAL IMAGEN */}

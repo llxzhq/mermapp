@@ -81,7 +81,9 @@ export default function Historial() {
       // MAP DATA
       // =========================================
       const mappedData = (res.data?.data || []).map((item) => {
-        const fecha = new Date(item.fechaHoraActual);
+        const detalle = item.merma;
+
+        const fecha = new Date(detalle.fechaHoraActual);
 
         const hoy = new Date();
 
@@ -102,12 +104,16 @@ export default function Historial() {
                 month: "long",
               });
 
-        const procesado = item.docSapMerma && item.docSapMerma !== "";
+        const procesado = detalle.docSapMerma && detalle.docSapMerma !== "";
 
         return {
-          id: item.id,
+          id: detalle.id,
 
-          name: item.producto,
+          merma: detalle,
+
+          menus: item.menus || [],
+
+          name: detalle.producto,
 
           time: fecha.toLocaleTimeString("es-CO", {
             hour: "2-digit",
@@ -117,33 +123,32 @@ export default function Historial() {
           group,
 
           category:
-            item.detalleProducto === "materia" ? "Inventario" : "Preparado",
+            detalle.detalleProducto === "materia" ? "Inventario" : "Preparado",
 
           tipo:
-            item.detalleProducto === "materia" ? "Materia prima" : "Preparada",
+            detalle.detalleProducto === "materia"
+              ? "Materia prima"
+              : "Preparada",
 
-          // =========================================
-          // IMAGEN
-          // =========================================
-          image: item.rutaImagenMerma
-            ? `http://192.168.212.8:8080/mermas/image?ruta=${item.rutaImagenMerma}`
+          image: detalle.rutaImagenMerma
+            ? `${apiUrl}/mermas/image?ruta=${detalle.rutaImagenMerma}`
             : "https://placehold.co/200x200/png",
 
           leido: false,
 
           procesado,
 
-          cantidadICG: item.cantidadICG,
+          cantidadICG: detalle.cantidadICG,
 
-          unidadMedidaICG: item.unidadMedidaICG || "Und",
+          unidadMedidaICG: detalle.unidadMedidaICG || "Und",
 
-          motivo: item.selectMotivo,
+          motivo: detalle.selectMotivo,
 
-          tienda: item.nombreTienda,
+          tienda: detalle.nombreTienda,
 
-          fechaOriginal: item.fechaHoraActual,
+          fechaOriginal: detalle.fechaHoraActual,
 
-          docSapMerma: item.docSapMerma || null,
+          docSapMerma: detalle.docSapMerma || null,
         };
       });
 
@@ -203,7 +208,7 @@ export default function Historial() {
     return data.filter((item) => {
       const matchTipo = tipoMerma === "Todas" || item.tipo === tipoMerma;
 
-      const matchSearch = item.name
+      const matchSearch = (item.name || "")
         .toLowerCase()
         .includes(search.toLowerCase());
 

@@ -51,33 +51,35 @@ export default function GestorReports() {
       console.log("REPORTES:", res.data?.data?.[0]);
 
       const mapped = (res.data?.data || []).map((item) => {
-        const fecha = new Date(item.fechaHoraActual);
+        const merma = item.merma;
+
+        const fecha = new Date(merma.fechaHoraActual);
 
         return {
-          id: item.id,
+          id: merma.id,
 
-          producto: item.producto || "Producto",
+          producto: merma.producto || "Producto",
 
-          codigoINVU: item.codigoProducto || "-",
+          codigoINVU: merma.codigoProducto || "-",
 
           codigoSAP:
-            item.codigoIntegracionProducto || item.codigoIntegracion || "-",
+            merma.codigoIntegracionProducto || merma.codigoIntegracion || "-",
 
-          tienda: item.nombreTienda || "Sin tienda",
+          tienda: merma.nombreTienda || "Sin tienda",
 
-          motivo: item.selectMotivo || "Sin motivo",
+          motivo: merma.selectMotivo || "Sin motivo",
 
           tipo:
-            item.detalleProducto === "materia" ? "Materia prima" : "Preparada",
+            merma.detalleProducto === "materia" ? "Materia prima" : "Preparada",
 
-          cantidad: item.cantidadICG || 0,
+          cantidad: Number(merma.cantidadICG || 0),
 
           estado:
-            item.docSapMerma && item.docSapMerma.trim() !== ""
+            merma.docSapMerma && merma.docSapMerma.trim() !== ""
               ? "Procesada"
               : "Pendiente",
 
-          documentoSAP: item.docSapMerma || "-",
+          documentoSAP: merma.docSapMerma || "-",
 
           fecha,
 
@@ -91,8 +93,8 @@ export default function GestorReports() {
             day: "numeric",
           }),
 
-          imagen: item.rutaImagenMerma
-            ? `${apiUrl}/mermas/image?ruta=${item.rutaImagenMerma}`
+          imagen: merma.rutaImagenMerma
+            ? `${apiUrl}/mermas/image?ruta=${merma.rutaImagenMerma}`
             : "https://placehold.co/300x300/png",
         };
       });
