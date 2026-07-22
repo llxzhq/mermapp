@@ -32,7 +32,7 @@ export default function GestorDetails() {
 
   const [showImageModal, setShowImageModal] = useState(false);
 
-  const apiUrl = "http://192.168.212.8:8080";
+  const apiUrl = import.meta.env.VITE_BASE_URL;
 
   if (!state) {
     return (
@@ -178,7 +178,7 @@ export default function GestorDetails() {
                 <img
                   src={
                     merma?.rutaImagenMerma
-                      ? `http://192.168.212.8:8080/mermas/image?ruta=${merma.rutaImagenMerma}`
+                      ? `${import.meta.env.VITE_BASE_URL}/mermas/image?ruta=${merma.rutaImagenMerma}`
                       : "https://placehold.co/600x400/png"
                   }
                   alt="Merma"

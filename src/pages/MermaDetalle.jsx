@@ -37,7 +37,7 @@ export default function MermaDetalle() {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const apiUrl = "http://192.168.212.8:8080";
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   // =========================================
   // FETCH
@@ -480,13 +480,15 @@ export default function MermaDetalle() {
             </div>
 
             {/* BOTÓN ELIMINAR */}
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setShowDeleteModal(true)}
-              className="w-full bg-red-500 text-white py-4 rounded-2xl font-medium shadow-lg"
-            >
-              Eliminar merma
-            </motion.button>
+            {!procesada && (
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowDeleteModal(true)}
+                className="w-full bg-red-500 text-white py-4 rounded-2xl font-medium shadow-lg"
+              >
+                Eliminar merma
+              </motion.button>
+            )}
           </div>
         </div>
       </motion.div>

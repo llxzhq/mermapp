@@ -117,7 +117,7 @@ export default function Login() {
         // =========================================
         const backendResponse = await fetch(
 
-           "http://192.168.212.8:8080/auth/login-azure",
+           `${import.meta.env.VITE_BASE_URL}/auth/login-azure`,
           
           {
             method: "POST",

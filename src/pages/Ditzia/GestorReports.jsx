@@ -37,7 +37,7 @@ export default function GestorReports() {
     years: [],
   });
 
-  const apiUrl = "http://192.168.212.8:8080";
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   // =========================================
   // FETCH
