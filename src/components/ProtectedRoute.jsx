@@ -1,20 +1,22 @@
 import { Navigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
+import { LocalStorage } from "@azure/msal-browser";
 
 export default function ProtectedRoute({
   children,
   allowedRoles = [],
 }) {
 
-  const { user, loading } = useAuth();
+  //const { user, loading } = useAuth();
+  const user = LocalStorage.getItem("usuario");
 
   // =========================================
   // LOADING
   // =========================================
-  if (loading) {
-    return null;
-  }
+  // if (loading) {
+  //   return null;
+  // }
 
   // =========================================
   // SIN LOGIN
