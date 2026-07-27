@@ -1,7 +1,6 @@
 import { Navigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
-import { LocalStorage } from "@azure/msal-browser";
 
 export default function ProtectedRoute({
   children,
@@ -9,7 +8,7 @@ export default function ProtectedRoute({
 }) {
 
   //const { user, loading } = useAuth();
-  const user = LocalStorage.getItem("usuario");
+  const user = localStorage.getItem("usuario");
 
   // =========================================
   // LOADING
