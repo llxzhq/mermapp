@@ -34,7 +34,7 @@ export default function Login() {
     const processLogin = async () => {
 
       try {
-        seLoading(true);
+        setLoading(true);
         const response = await instance.handleRedirectPromise();
 
         if (!response) {

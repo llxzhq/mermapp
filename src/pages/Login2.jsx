@@ -12,7 +12,7 @@ export default function Login2() {
     Password: "",
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading2, setLoading2] = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -92,7 +92,7 @@ export default function Login2() {
     let slowTimer;
 
     try {
-      setLoading(true);
+      setLoading2(true);
 
       loaderTimer = setTimeout(() => setShowLoader(true), 400);
       slowTimer = setTimeout(() => setSlowConnection(true), 2500);
@@ -145,7 +145,7 @@ export default function Login2() {
       clearTimeout(loaderTimer);
       clearTimeout(slowTimer);
 
-      setLoading(false);
+      setLoading2(false);
       setShowLoader(false);
       setSlowConnection(false);
     }
@@ -270,17 +270,17 @@ export default function Login2() {
             <motion.button
               whileTap={!isLocked ? { scale: 0.97 } : {}}
               type="submit"
-              disabled={loading || isLocked}
+              disabled={loading2 || isLocked}
               className={`w-full py-3 rounded-xl font-semibold
                 ${
-                  loading || isLocked
+                  loading2 || isLocked
                     ? "bg-gray-300 text-gray-500"
                     : "bg-gray-800 text-white hover:bg-black"
                 }`}
             >
               {isLocked
                 ? `Intenta en ${formatTime(remainingTime)}`
-                : loading
+                : loading2
                 ? "Ingresando..."
                 : "Continuar"}
             </motion.button>
