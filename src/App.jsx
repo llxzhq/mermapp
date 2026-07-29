@@ -31,19 +31,10 @@ export default function App() {
         {/* =========================================
         🔓 RUTAS PÚBLICAS
         ========================================= */}
-<<<<<<< HEAD
-
-        <Route path="/" element={<Navigate to="/login" replace />} />
-
-        <Route path="/splash" element={<Splash />} />
-
-        <Route path="/login" element={<Login />} />
-=======
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/splash" element={<Splash />} />
         <Route path="/login" element={<Login />} />
         <Route path="/login2" element={<Login2 />} />
->>>>>>> 79643c3462fdbdd8da7fe076b8738a5decad6f1d
 
         {/* =========================================
         🔒 MERMO DITZIA SIN NAVBAR
@@ -69,16 +60,8 @@ export default function App() {
           }
         >
           <Route path="/home-gestion" element={<HomeGestion />} />
-<<<<<<< HEAD
-
-          <Route path="/gestion-mermas" element={<GestorMermas />} />
-
-          <Route path="/gestion-reportes" element={<GestorReports />} />
-
-=======
           <Route path="/gestion-mermas" element={<GestorMermas />} />
           <Route path="/gestion-reportes" element={<GestorReports />} />
->>>>>>> 79643c3462fdbdd8da7fe076b8738a5decad6f1d
           <Route path="/gestion-detalles/:id" element={<GestorDetails />} />
         </Route>
 
@@ -93,23 +76,6 @@ export default function App() {
           }
         >
           <Route path="/select-branch" element={<SelectBranch />} />
-<<<<<<< HEAD
-
-          <Route path="/home" element={<Home />} />
-
-          <Route path="/profile" element={<Profile />} />
-
-          <Route path="/checkout" element={<Checkout />} />
-
-          <Route path="/historial" element={<Historial />} />
-
-          <Route path="/mermas/detalle/:id" element={<MermaDetalle />} />
-
-          <Route path="/reports" element={<Reports />} />
-
-          <Route path="/mermo" element={<Mermo />} />
-
-=======
           <Route path="/home" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/checkout" element={<Checkout />} />
@@ -117,17 +83,12 @@ export default function App() {
           <Route path="/mermas/detalle/:id" element={<MermaDetalle />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/mermo" element={<Mermo />} />
->>>>>>> 79643c3462fdbdd8da7fe076b8738a5decad6f1d
           <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
 
         {/* =========================================
         🚫 DEFAULT
         ========================================= */}
-<<<<<<< HEAD
-
-=======
->>>>>>> 79643c3462fdbdd8da7fe076b8738a5decad6f1d
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </AuthProvider>

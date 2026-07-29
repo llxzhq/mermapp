@@ -77,14 +77,7 @@ export default function Login() {
         // =========================================
         // LOGIN BACKEND
         // =========================================
-<<<<<<< HEAD
-        const backendResponse = await fetch(
-
-           `${import.meta.env.VITE_API_URL}/auth/login-azure`,
-          
-=======
         const backendResponse = await fetch(`${import.meta.env.VITE_API_URL}/auth/login-azure`,
->>>>>>> 79643c3462fdbdd8da7fe076b8738a5decad6f1d
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
