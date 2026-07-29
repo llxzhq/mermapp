@@ -103,7 +103,13 @@ export default function GestoraHome() {
 
       const res = await api.get("/mermas");
 
-      const mapped = (res.data?.data || []).map((item) => item.merma);
+      console.log("Respuesta API:", res.data);
+
+      const mapped = (res.data?.data || [])
+        .map((item) => item?.merma)
+        .filter(Boolean);
+
+      console.log("Mermas:", mapped);
 
       setMermas(mapped);
     } catch (error) {
@@ -120,10 +126,11 @@ export default function GestoraHome() {
     const today = new Date();
 
     return mermas.filter((item) => {
+      if (!item?.fechaHoraActual) return false;
+
       const fecha = new Date(item.fechaHoraActual);
 
       const diffTime = today - fecha;
-
       const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
       if (filtro === "Semana") return diffDays <= 7;

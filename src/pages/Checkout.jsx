@@ -361,7 +361,10 @@ export default function Checkout() {
         username || usuarioNombre || "usuario_desconocido",
       );
 
-      formData.append("UnidadMedidaICG", unidad === "unidades" ? "Und" : "Gr");
+      formData.append(
+        "UnidadMedidaICG",
+        unidad === "unidades" ? "Und" : unidad === "gramos" ? "Gr" : "Oz",
+      );
 
       formData.append("IdTienda", idTienda);
 
@@ -963,8 +966,8 @@ export default function Checkout() {
                       </p>
 
                       {/* UNIDADES */}
-                      <div className="grid grid-cols-2 gap-3 mb-5">
-                        {["unidades", "gramos"].map((u) => (
+                      <div className="grid grid-cols-3 gap-3 mb-5">
+                        {["unidades", "gramos", "onzas"].map((u) => (
                           <button
                             key={u}
                             type="button"
