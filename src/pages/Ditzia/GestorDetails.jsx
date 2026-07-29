@@ -178,7 +178,7 @@ export default function GestorDetails() {
                 <img
                   src={
                     merma?.rutaImagenMerma
-                      ? `${import.meta.env.VITE_BASE_URL}/mermas/image?ruta=${merma.rutaImagenMerma}`
+                      ? `${import.meta.env.VITE_API_URL}/mermas/image?ruta=${merma.rutaImagenMerma}`
                       : "https://placehold.co/600x400/png"
                   }
                   alt="Merma"

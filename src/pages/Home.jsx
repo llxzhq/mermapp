@@ -442,7 +442,7 @@ export default function Home() {
                       <img
                         src={
                           detalle.rutaImagenMerma
-                            ? `${import.meta.env.VITE_BASE_URL}/mermas/image?ruta=${detalle.rutaImagenMerma}`
+                            ? `${import.meta.env.VITE_API_URL}/mermas/image?ruta=${detalle.rutaImagenMerma}`
                             : "https://placehold.co/300x300/png"
                         }
                         alt={detalle.producto}

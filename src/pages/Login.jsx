@@ -117,7 +117,7 @@ export default function Login() {
         // =========================================
         const backendResponse = await fetch(
 
-           `${import.meta.env.VITE_BASE_URL}/auth/login-azure`,
+           `${import.meta.env.VITE_API_URL}/auth/login-azure`,
           
           {
             method: "POST",

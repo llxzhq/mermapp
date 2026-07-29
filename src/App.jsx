@@ -29,31 +29,18 @@ import GestorDetails from "./pages/Ditzia/GestorDetails";
 import GestorReports from "./pages/Ditzia/GestorReports";
 
 export default function App() {
-
   return (
-
     <AuthProvider>
-
       <Routes>
-
         {/* =========================================
         🔓 RUTAS PÚBLICAS
         ========================================= */}
 
-        <Route
-          path="/"
-          element={<Navigate to="/login" replace />}
-        />
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-        <Route
-          path="/splash"
-          element={<Splash />}
-        />
+        <Route path="/splash" element={<Splash />} />
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+        <Route path="/login" element={<Login />} />
 
         {/* =========================================
         🔒 MERMO DITZIA SIN NAVBAR
@@ -79,27 +66,13 @@ export default function App() {
             </ProtectedRoute>
           }
         >
+          <Route path="/home-gestion" element={<HomeGestion />} />
 
-          <Route
-            path="/home-gestion"
-            element={<HomeGestion />}
-          />
+          <Route path="/gestion-mermas" element={<GestorMermas />} />
 
-          <Route
-            path="/gestion-mermas"
-            element={<GestorMermas />}
-          />
+          <Route path="/gestion-reportes" element={<GestorReports />} />
 
-          <Route
-            path="/gestion-reportes"
-            element={<GestorReports />}
-          />
-
-          <Route
-            path="/gestion-detalles/:id"
-            element={<GestorDetails />}
-          />
-
+          <Route path="/gestion-detalles/:id" element={<GestorDetails />} />
         </Route>
 
         {/* =========================================
@@ -113,69 +86,31 @@ export default function App() {
             </ProtectedRoute>
           }
         >
+          <Route path="/select-branch" element={<SelectBranch />} />
 
-          <Route
-            path="/select-branch"
-            element={<SelectBranch />}
-          />
+          <Route path="/home" element={<Home />} />
 
-          <Route
-            path="/home"
-            element={<Home />}
-          />
+          <Route path="/profile" element={<Profile />} />
 
-          <Route
-            path="/profile"
-            element={<Profile />}
-          />
+          <Route path="/checkout" element={<Checkout />} />
 
+          <Route path="/historial" element={<Historial />} />
 
-          <Route
-            path="/checkout"
-            element={<Checkout />}
-          />
+          <Route path="/mermas/detalle/:id" element={<MermaDetalle />} />
 
-          <Route
-            path="/historial"
-            element={<Historial />}
-          />
+          <Route path="/reports" element={<Reports />} />
 
-          <Route
-            path="/mermas/detalle/:id"
-            element={<MermaDetalle />}
-          />
+          <Route path="/mermo" element={<Mermo />} />
 
-          <Route
-            path="/reports"
-            element={<Reports />}
-          />
-        
-
-          <Route
-            path="/mermo"
-            element={<Mermo />}
-          />
-
-          <Route
-            path="/reset-password"
-            element={<ResetPassword />}
-          />
-
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
 
         {/* =========================================
         🚫 DEFAULT
         ========================================= */}
 
-        <Route
-          path="*"
-          element={<Navigate to="/login" replace />}
-        />
-
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-
     </AuthProvider>
-
   );
-
 }
