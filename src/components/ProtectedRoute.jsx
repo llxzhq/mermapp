@@ -7,14 +7,15 @@ export default function ProtectedRoute({
   allowedRoles = [],
 }) {
 
-  const { user, loading } = useAuth();
+  //const { user, loading } = useAuth();
+  const user = localStorage.getItem("usuario");
 
   // =========================================
   // LOADING
   // =========================================
-  if (loading) {
-    return null;
-  }
+  // if (loading) {
+  //   return null;
+  // }
 
   // =========================================
   // SIN LOGIN
