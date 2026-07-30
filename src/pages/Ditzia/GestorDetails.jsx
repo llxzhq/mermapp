@@ -32,7 +32,7 @@ export default function GestorDetails() {
 
   const [showImageModal, setShowImageModal] = useState(false);
 
-  const apiUrl = import.meta.env.VITE_BASE_URL;
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   if (!state) {
     return (

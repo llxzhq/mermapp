@@ -155,9 +155,11 @@ export default function GestoraHome() {
       (m) => m.docSapMerma && m.docSapMerma.trim() !== "",
     ).length;
 
-    const productosPerdidos = filteredMermas.reduce((acc, item) => {
-      return acc + Number(item.cantidadICG || 0);
-    }, 0);
+    const productosPerdidos = Math.round(
+      filteredMermas.reduce((acc, item) => {
+        return acc + Number(item.cantidadICG || 0);
+      }, 0),
+    );
 
     const sucursales = new Set(filteredMermas.map((m) => m.nombreTienda)).size;
 
