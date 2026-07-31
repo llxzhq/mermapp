@@ -7,6 +7,7 @@ import DitziaLayout from "./layouts/DitziaLayout";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Logs from "./pages/Logs";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/splash" element={<Splash />} />
         <Route path="/login" element={<Login />} />
         <Route path="/login2" element={<Login2 />} />
+        <Route path="/logs" element={<Logs />} />
 
         {/* =========================================
         🔒 MERMO DITZIA SIN NAVBAR
