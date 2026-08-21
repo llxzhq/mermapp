@@ -62,8 +62,7 @@ export default function Historial() {
       const branch = JSON.parse(localStorage.getItem("branch") || "{}");
 
       console.log("BRANCH:", branch);
-
-      console.log(
+       console.log(
         "URL FINAL:",
         `/mermas/mermas-by-coffee?coffeeId=${branch?.idTienda}`,
       );

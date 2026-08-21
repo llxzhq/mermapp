@@ -406,6 +406,7 @@ export default function HistorialGestora() {
         ),
       );
 
+      
       setData((prev) =>
         prev.map((item) =>
           selectedIds.includes(item.id)
@@ -756,3 +757,4 @@ export default function HistorialGestora() {
     </div>
   );
 }
+

@@ -30,9 +30,9 @@ export default function App() {
     <AuthProvider>
       <Routes>
         {/* =========================================
-        🔓 RUTAS PÚBLICAS
-        ========================================= */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+🔓 RUTAS PÚBLICAS
+========================================= */}
+        <Route path="/" element={<Navigate to="/splash" replace />} />
         <Route path="/splash" element={<Splash />} />
         <Route path="/login" element={<Login />} />
         <Route path="/login2" element={<Login2 />} />
